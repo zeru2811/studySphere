@@ -1,0 +1,15 @@
+// SELECT all users
+$result = selectData('users', $mysqli);
+$users = fetchAll($result);
+
+// INSERT a new category
+insertData('category', $mysqli, ['name' => 'Mathematics']);
+
+// UPDATE a course
+updateData('courses', $mysqli, ['price' => 299], ['id' => 1]);
+
+// DELETE a subject
+deleteData('Subject', $mysqli, ['id' => 5]);
+
+// Count number of blog posts
+$totalBlogs = countData('blog', $mysqli);
