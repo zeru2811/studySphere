@@ -21,3 +21,8 @@ checkRoleAuth('student', $mysqli, $cp_base_url);
 to get $site_config['key'] 
 $site_config['key'] = bin2hex(random_bytes(8));
 echo $site_config['key'];
+
+
+// လက်ရှိ request လုပ်ထားတဲ့ PHP ဖိုင်နာမည်ကို ယူပြီး current page ကို ဆုံးဖြတ်တာ
+$current_script = basename($_SERVER['SCRIPT_FILENAME'], '.php');
+$current_page = ($current_script == 'index') ? 'home' : $current_script;

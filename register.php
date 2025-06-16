@@ -104,13 +104,14 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == '1') {
         $result  = $mysqli->query($sql);
         if ($result) {
             $url = $cp_base_url . 'login.php?success=Register Success';
-            $suc_msg = "Login Successfully";
+            $suc_msg = "Register Successfully";
             echo "<script>
                 setTimeout(function() {
                     window.location.href = '$url';
                 }, 2000);
             </script>";
         }
+        $result->close();
     }
     else{
         $error_msg = "Error in Registration";

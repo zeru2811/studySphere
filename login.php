@@ -64,16 +64,16 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
                     }
                 }else{
                     $error = true;
-                    $pass_error = "Password is incorrect.";
+                    $pass_error = "Password is incorrect!";
                 }
             }
         }else{
             $error = true;
-            $password_error = "Password is incorrect.";
+            $pass_error = "User not found!";
         }
     }else{
         $error = true;
-        $user_error = "User not found.";
+        $user_error = "Error!";
     }
     
 }
@@ -123,6 +123,21 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
                         </div>
                         <div class="ml-3">
                             <p class="text-sm text-green-700"><?= $suc_msg ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+
+            <?php if ($user_error) { ?>
+                <div id="userError" class="bg-red-50 border-red-500 p-4 absolute w-[446px] shadow top-16 rounded">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-700"><?= $user_error ?></p>
                         </div>
                     </div>
                 </div>
@@ -235,6 +250,7 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
     setTimeout(() => {
         const successMessage = document.getElementById('successMessage');
         const sucMsg = document.getElementById('sucMsg');
+        const userError = document.getElementById('userError');
 
         if (successMessage) {
             successMessage.classList.add('opacity-0');
@@ -245,6 +261,12 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
             sucMsg.classList.add('opacity-0');
             setTimeout(() => sucMsg.remove(), 500);
         }
+
+        if (userError) {
+            userError.classList.add('opacity-0');
+            setTimeout(() => userError.remove(), 500);
+        }
+        
         //remove session with post
         fetch('unset_session_msg.php', { method: 'POST' });
     }, 3000);
