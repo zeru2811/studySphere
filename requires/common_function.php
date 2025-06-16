@@ -6,21 +6,27 @@ function selectData($table, $mysqli, $where = '', $select = '*', $order = '')
     $sql = "SELECT $select FROM `$table`";
     if ($where) $sql .= " WHERE $where";
     if ($order) $sql .= " ORDER BY $order";
+    // var_dump($sql);
+    // exit;
     return $mysqli->query($sql);
 }
 
 // INSERT data
-function insertData($table, $mysqli, $data)
+function insertData($table, $mysqli, $values)
 {
-    $columns = array_keys($data);
-    $values = array_map(function ($val) use ($mysqli) {
-        return "'" . $mysqli->real_escape_string($val) . "'";
-    }, array_values($data));
-
-    $columnList = implode(", ", array_map(fn($col) => "`$col`", $columns));
-    $valueList = implode(", ", $values);
-
-    $sql = "INSERT INTO `$table` ($columnList) VALUES ($valueList)";
+    $column = [];
+    $value = [];
+    foreach ($values as $key => $item) {
+        $column[] = "`" . $key . "`";
+        $value[] = "'" . $item . "'";
+    }
+    $colums = implode(', ', $column);
+    $values = implode(', ', $value);
+    $sql  = "INSERT INTO `$table` 
+            ($colums)
+            VALUES
+            ($values)";
+            
     return $mysqli->query($sql);
 }
 
@@ -40,6 +46,8 @@ function updateData($table, $mysqli, $data, $where)
     }
 
     $sql = "UPDATE `$table` SET " . implode(", ", $updates) . " WHERE " . implode(" AND ", $wheres);
+    // var_dump($sql);
+    // exit;
     return $mysqli->query($sql);
 }
 

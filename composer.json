@@ -1,0 +1,17 @@
+{
+    "name": "zeru/study-sphere",
+    "autoload": {
+        "psr-4": {
+            "Zeru\\StudySphere\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Z3ru2820",
+            "email": "waiyan.3l.2001@gmail.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.10"
+    }
+}

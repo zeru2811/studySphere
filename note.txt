@@ -13,3 +13,11 @@ deleteData('Subject', $mysqli, ['id' => 5]);
 
 // Count number of blog posts
 $totalBlogs = countData('blog', $mysqli);
+
+checkRoleAuth('admin', $mysqli, $cp_base_url); 
+checkRoleAuth('teacher', $mysqli, $cp_base_url);
+checkRoleAuth('student', $mysqli, $cp_base_url);
+
+to get $site_config['key'] 
+$site_config['key'] = bin2hex(random_bytes(8));
+echo $site_config['key'];

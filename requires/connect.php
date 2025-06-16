@@ -49,6 +49,7 @@ function create_table($mysqli){
         email VARCHAR(100) NOT NULL UNIQUE,
         phone VARCHAR(50),
         password VARCHAR(200),
+        gender ENUM('male', 'female', 'other') DEFAULT NULL, 
         role_id INT,
         uniqueId VARCHAR(100) UNIQUE,
         status BOOLEAN DEFAULT TRUE,
@@ -61,7 +62,7 @@ function create_table($mysqli){
     // password_token
     $sql = "CREATE TABLE IF NOT EXISTS password_token (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        reset_code INT,
+        reset_code varchar(10),
         userId INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
