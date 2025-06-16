@@ -4,6 +4,7 @@ require "requires/common.php";
 require "requires/title.php";
 require "requires/connect.php";
 
+
 $user_name = "";
 $remember = 0;
 $error = false;
@@ -14,6 +15,7 @@ $suc_msg = "";
 
 $success = $_SESSION['success'] ?? '';
 
+session_unset();
 
 if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
     $user_name = $mysqli->real_escape_string($_POST['username']);
@@ -42,7 +44,7 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
 
                 if(password_verify($password, $db_password)){
                     $_SESSION['id'] = $user_id;
-                    $_SESSION['username'] = $db_username;
+                    $_SESSION['username'] = $db_name;
                     $_SESSION['email'] = $db_email;
                     $_SESSION['role'] = $db_role;
 
@@ -53,14 +55,16 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
                     }
 
                     if($db_role == 1 || $db_role == 2){
+                        $_SESSION['id'] = $user_id;
                         $url = $admin_base_url . "index.php?success=Login Success";
                         $suc_msg = "Login Successfully";
-                        header("Refresh: 0; url=$url");
+                        header("Refresh: 2; url=$url");
                     }
                     else{
+                        $_SESSION['id'] = $user_id;
                         $url = $base_url . "index.php?success=Login Success";
                         $suc_msg = "Login Successfully";
-                        header("Refresh: 0; url=$url");
+                        header("Refresh: 2; url=$url");
                     }
                 }else{
                     $error = true;
