@@ -62,6 +62,7 @@ function create_table($mysqli){
         uniqueId VARCHAR(100) UNIQUE,
         thumbnail TEXT,
         status BOOLEAN DEFAULT TRUE,
+        note VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (role_id) REFERENCES role(id)
@@ -273,16 +274,16 @@ function create_table($mysqli){
     if ($mysqli->query($sql) === false) return false;
 
     //approveby
-    $sql = "CREATE TABLE IF NOT EXISTS approveby (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        userId INT,
-        questionId INT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (userId) REFERENCES users(id),
-        FOREIGN KEY (questionId) REFERENCES question(id)
-    )";
-    if ($mysqli->query($sql) === false) return false;
+    // $sql = "CREATE TABLE IF NOT EXISTS approveby (
+    //     id INT AUTO_INCREMENT PRIMARY KEY,
+    //     userId INT,
+    //     questionId INT,
+    //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    //     FOREIGN KEY (userId) REFERENCES users(id),
+    //     FOREIGN KEY (questionId) REFERENCES question(id)
+    // )";
+    // if ($mysqli->query($sql) === false) return false;
     
 
     // learning_path
@@ -334,6 +335,28 @@ function create_table($mysqli){
         address TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
+    $sql = "CREATE TABLE IF NOT EXISTS schedule (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        meeting_link TEXT,
+        datetime DATETIME,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
+    $sql = "CREATE TABLE IF NOT EXISTS schedule_user (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT,
+        scheduleId INT,
+        status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+        schdule_role ENUM('student', 'teacher') DEFAULT 'student',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id),
+        FOREIGN KEY (scheduleId) REFERENCES schedule(id)
     )";
     if ($mysqli->query($sql) === false) return false;
 }
