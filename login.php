@@ -15,7 +15,7 @@ $suc_msg = "";
 
 $success = $_SESSION['success'] ?? '';
 
-session_unset();
+// session_unset();
 
 if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
     $user_name = $mysqli->real_escape_string($_POST['username']);
@@ -56,7 +56,7 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
 
                     if($db_role == 1 || $db_role == 2){
                         $_SESSION['id'] = $user_id;
-                        $url = $admin_base_url . "index.php?success=Login Success";
+                        $url = $admin_base_url . "user_management.php?success=Login Success";
                         $suc_msg = "Login Successfully";
                         header("Refresh: 2; url=$url");
                     }

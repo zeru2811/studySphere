@@ -1,46 +1,91 @@
-<nav class="bg-gray-800 shadow-lg">
+<?php 
+  $title = "Study Sphere";
+  require "template_header.php";
+?>
+<style>
+  .dropdown-enter {
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+  .dropdown-active {
+    max-height: 500px;
+    opacity: 1;
+  }
+</style>
+<body class="bg-white">
+
+<!-- Navbar -->
+<nav class="border-b">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <!-- Logo/Brand -->
-      <div class="flex-shrink-0">
-        <a href="<?= $base_url ?>index.php" class="text-white font-bold text-xl">
-          <?= isset($setting['name']) ? $setting['name'] : 'Study Sphere'; ?>
-        </a>
-      </div>
+    <div class="flex justify-between items-center py-4">
       
-      <!-- Mobile menu button -->
+      <!-- Logo -->
+      <a href="../frontend/index.php" class="flex items-center space-x-2">
+        <img src="../img/logo.png" alt="Logo" class="w-8 h-8">
+        <span class="font-bold text-xl">StudySphere</span>
+      </a>
+
+      <!-- Menu button (Mobile) -->
       <div class="md:hidden">
-        <button type="button" class="text-gray-300 hover:text-white focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <button id="menu-btn" class="text-gray-800 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
       </div>
-      
+
       <!-- Desktop Menu -->
-      <div class="hidden md:block">
-        <div class="ml-10 flex items-baseline space-x-4">
-          <a href="<?= $base_url ?>index.php" class="<?= $current_page == 'home' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">Home</a>
-          <a href="<?= $base_url ?>courses.php" class="<?= $current_page == 'courses' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">Courses</a>
-          <a href="<?= $base_url ?>learning_path.php" class="<?= $current_page == 'learning_path' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">Learning Path</a>
-          <a href="<?= $base_url ?>discussion.php" class="<?= $current_page == 'discussion' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">Discussion</a>
-          <a href="<?= $base_url ?>blog.php" class="<?= $current_page == 'blog' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">Blog</a>
-          <a href="<?= $base_url ?>about.php" class="<?= $current_page == 'about' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> px-3 py-2 rounded-md text-sm font-medium">About Us</a>
-        </div>
+      <div class="hidden md:flex space-x-8 text-sm font-medium">
+        <a href="courses.php" class="text-black hover:text-blue-600">Courses</a>
+        <?php if ($_SESSION['role_id'] != 4): ?>
+          <a href="learning_path.php" class="text-black hover:text-blue-600">Learning Path</a>
+        <?php endif; ?>
+        <a href="discussion.php" class="text-black hover:text-blue-600">Discussion</a>
+        <a href="blogs.php" class="text-black hover:text-blue-600">Blogs</a>
+        <a href="about_us.php" class="text-black hover:text-blue-600">About Us</a>
+      </div>
+
+      <!-- Search + Profile (Desktop) -->
+      <div class="hidden md:flex items-center space-x-4">
+        <!-- <div class="relative">
+          <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div> -->
+        <img src="../img/image.png" alt="Profile" class="w-8 h-8 rounded-full object-cover border p-1 shadow">
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="dropdown-enter md:hidden flex flex-col space-y-2 text-sm font-medium rounded-lg bg-white shadow-sm border border-gray-200">
+      <a href="courses.php" class="text-black hover:text-blue-600 hidden">Courses</a>
+      <?php if ($_SESSION['role_id'] != 4): ?>
+        <a href="learning_path.php" class="text-black hover:text-blue-600">Learning Path</a>
+      <?php endif; ?>
+      <a href="discussion.php" class="text-black hover:text-blue-600 hidden">Discussion</a>
+      <a href="blogs.php" class="text-black hover:text-blue-600 hidden">Blogs</a>
+      <a href="about_us.php" class="text-black hover:text-blue-600 hidden">About Us</a>
+      <div class="flex items-center space-x-4 pt-2 px-2">
+        <!-- <div class="relative w-full">
+          <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 w-full rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div> -->
+        <img src="https://i.pravatar.cc/40?img=10" alt="Profile" class="w-8 h-8 rounded-full object-cover">
       </div>
     </div>
   </div>
-
-  <!-- Mobile Menu -->
-  <div class="md:hidden hidden" id="mobile-menu">
-    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-      <a href="<?= $base_url ?>index.php" class="<?= $current_page == 'home' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">Home</a>
-      <a href="<?= $base_url ?>courses.php" class="<?= $current_page == 'courses' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">Courses</a>
-      <a href="<?= $base_url ?>learning_path.php" class="<?= $current_page == 'learning_path' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">Learning Path</a>
-      <a href="<?= $base_url ?>discussion.php" class="<?= $current_page == 'discussion' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">Discussion</a>
-      <a href="<?= $base_url ?>blog.php" class="<?= $current_page == 'blog' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">Blog</a>
-      <a href="<?= $base_url ?>about.php" class="<?= $current_page == 'about' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?> block px-3 py-2 rounded-md text-base font-medium">About Us</a>
-    </div>
-  </div>
 </nav>
+
+

@@ -6,8 +6,6 @@ function selectData($table, $mysqli, $where = '', $select = '*', $order = '')
     $sql = "SELECT $select FROM `$table`";
     if ($where) $sql .= " WHERE $where";
     if ($order) $sql .= " ORDER BY $order";
-    // var_dump($sql);
-    // exit;
     return $mysqli->query($sql);
 }
 

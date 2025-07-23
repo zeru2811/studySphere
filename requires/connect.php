@@ -42,6 +42,14 @@ function create_table($mysqli){
     )";
     if ($mysqli->query($sql) === false) return false;
 
+    $sql = "CREATE TABLE IF NOT EXISTS category (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
     // users
     $sql = "CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,10 +60,34 @@ function create_table($mysqli){
         gender ENUM('male', 'female', 'other') DEFAULT NULL, 
         role_id INT,
         uniqueId VARCHAR(100) UNIQUE,
+        thumbnail TEXT,
         status BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (role_id) REFERENCES role(id)
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
+    // feedback
+    $sql = "CREATE TABLE IF NOT EXISTS feedback (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        text TEXT,
+        userId INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id)
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
+
+    // baseClass
+    $sql = "CREATE TABLE IF NOT EXISTS baseClass (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        is_complete BOOLEAN DEFAULT FALSE,
+        userId INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id)
     )";
     if ($mysqli->query($sql) === false) return false;
 
@@ -70,24 +102,36 @@ function create_table($mysqli){
     )";
     if ($mysqli->query($sql) === false) return false;
 
-    // category
-    $sql = "CREATE TABLE IF NOT EXISTS category (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-    if ($mysqli->query($sql) === false) return false;
-
     // courses
     $sql = "CREATE TABLE IF NOT EXISTS courses (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
-        categoryId INT,
         price INT,
+        title VARCHAR(100),
+        description TEXT,
+        thumbnail TEXT,
+        teacherId INT,
+        categoryId INT,
+        isCertificate BOOLEAN DEFAULT FALSE,
+        totalHours INT,
+        function TEXT,
+        realProjectCount INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (teacherId) REFERENCES users(id),
         FOREIGN KEY (categoryId) REFERENCES category(id)
+    )";
+    if ($mysqli->query($sql) === false) return false;
+
+    // lessons
+    $sql = "CREATE TABLE IF NOT EXISTS lessons (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        lessonUrl TEXT,
+        title VARCHAR(200),
+        description TEXT,
+        duration VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
     if ($mysqli->query($sql) === false) return false;
 
@@ -105,21 +149,12 @@ function create_table($mysqli){
         id INT AUTO_INCREMENT PRIMARY KEY,
         courseId INT,
         subjectId INT,
+        lessonId INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (courseId) REFERENCES courses(id),
-        FOREIGN KEY (subjectId) REFERENCES subject(id)
-    )";
-    if ($mysqli->query($sql) === false) return false;
-
-    // lessons
-    $sql = "CREATE TABLE IF NOT EXISTS lessons (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        courseId INT,
-        lessonUrl TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (courseId) REFERENCES courses(id)
+        FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
+        FOREIGN KEY (lessonId) REFERENCES lessons(id) ON DELETE CASCADE,
+        FOREIGN KEY (subjectId) REFERENCES subject(id) ON DELETE CASCADE
     )";
     if ($mysqli->query($sql) === false) return false;
 
@@ -153,6 +188,7 @@ function create_table($mysqli){
     $sql = "CREATE TABLE IF NOT EXISTS course_feedback (
         id INT AUTO_INCREMENT PRIMARY KEY,
         text TEXT,
+        ratingCount INT,
         courseId INT,
         userId INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -167,6 +203,7 @@ function create_table($mysqli){
         id INT AUTO_INCREMENT PRIMARY KEY,
         userId INT,
         courseId INT,
+        status BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (userId) REFERENCES users(id),
@@ -178,7 +215,6 @@ function create_table($mysqli){
     $sql = "CREATE TABLE IF NOT EXISTS payment_type (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
-        path TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
@@ -189,7 +225,8 @@ function create_table($mysqli){
         id INT AUTO_INCREMENT PRIMARY KEY,
         paymentTypeId INT,
         enroll_courseId INT,
-        finalPrice INT,
+        transitionId VARCHAR(100),
+        path TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (paymentTypeId) REFERENCES payment_type(id),
@@ -201,7 +238,6 @@ function create_table($mysqli){
     $sql = "CREATE TABLE IF NOT EXISTS module (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
-        moduleCode VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
@@ -215,6 +251,7 @@ function create_table($mysqli){
         title VARCHAR(200),
         userId INT,
         likeCount INT DEFAULT 0,
+        is_approve BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (moduleId) REFERENCES module(id),
@@ -235,6 +272,19 @@ function create_table($mysqli){
     )";
     if ($mysqli->query($sql) === false) return false;
 
+    //approveby
+    $sql = "CREATE TABLE IF NOT EXISTS approveby (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT,
+        questionId INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id),
+        FOREIGN KEY (questionId) REFERENCES question(id)
+    )";
+    if ($mysqli->query($sql) === false) return false;
+    
+
     // learning_path
     $sql = "CREATE TABLE IF NOT EXISTS learning_path (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -247,8 +297,8 @@ function create_table($mysqli){
     )";
     if ($mysqli->query($sql) === false) return false;
 
-    // learning_path_subject
-    $sql = "CREATE TABLE IF NOT EXISTS learning_path_subject (
+    // learning_path_courseId
+    $sql = "CREATE TABLE IF NOT EXISTS learning_path_courseId (
         id INT AUTO_INCREMENT PRIMARY KEY,
         learning_pathId INT,
         courseId INT,
@@ -266,6 +316,9 @@ function create_table($mysqli){
         title VARCHAR(200),
         description TEXT,
         blogCatagory ENUM('general','announcement','tech','education') NOT NULL,
+        thumbnail VARCHAR(255),
+        slug VARCHAR(255),
+        authorName VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )";
