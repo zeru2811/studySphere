@@ -39,9 +39,16 @@
             <a href="course_curriculum.php" class="block py-3 px-6 <?= $currentPage == 'course_curriculum.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
                 <i class="fas fa-link mr-3"></i> Create Connection
             </a>
+            <a href="enroll_list.php" class="block py-3 px-6 <?= $currentPage == 'enroll_list.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-link mr-3"></i> Enroll Course
+            </a>
             <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
                 <i class="fas fa-comments mr-3"></i> Discussions
             </a>
+            <a href="../frontend/" class="block py-3 px-6">
+                <i class="fas fa-link mr-3"></i>Go to Frontend
+            </a>
+
             <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
                 <i class="fas fa-cog mr-3"></i> Settings
             </a>
@@ -52,11 +59,20 @@
             <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
                 <i class="fas fa-user mr-3"></i> My Profile
             </a>
-            <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
+            <a href="#" onclick="openModal('logoutModal')" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
                 <i class="fas fa-sign-out-alt mr-3"></i> Logout
             </a>
         </nav>
-            
+        <div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h2 class="text-lg font-semibold mb-4">Confirm Logout</h2>
+                <p class="text-gray-600 mb-6">Are you sure you want to log out?</p>
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeModal('logoutModal')" class="px-4 py-2 border rounded">Cancel</button>
+                    <a href="../logout.php" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Logout</a>
+                </div>
+            </div>
+        </div>
         <div class="px-6 mt-auto">
             <div class="bg-light rounded-lg p-4">
                 <div class="flex items-center">
@@ -71,4 +87,12 @@
             </div>
         </div>
     </div>
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
 
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>

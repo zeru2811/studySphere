@@ -5,12 +5,17 @@ require "../requires/title.php";
 require "../requires/connect.php";
 $currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "User Management";
-$_SESSION['role_id'] = 1;//out of stock
+$_SESSION['role_id'] = 1;
 
 // if($_SESSION['role_id'] == 4 || $_SESSION['role_id'] == 3){
 
 // }
 // unset ($_SESSION['role_id']);
+
+// if (!isset($_SESSION['id']) || $_SESSION['role_id'] != 1) {
+//     header("Location: ../login.php");
+//     exit;
+// }
 
 $statsTotalUsers = $mysqli->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()['total'];
 $activeUsers = $mysqli->query("SELECT COUNT(*) as total FROM users WHERE status = 1")->fetch_assoc()['total'];
@@ -705,7 +710,7 @@ require './templates/admin_sidebar.php';
                                                 <span><?= htmlspecialchars(substr($row['name'], 0, 2)) ?></span>
                                             </div>
                                             <div class="ml-4">
-                                                <div class="font-medium text-gray-900"><?= htmlspecialchars($row['name']) ?></div>
+                                                <div class="font-medium"><a href="user_details.php?id=<?= $row['id'] ?>" class="underline"><?= htmlspecialchars($row['name']) ?></a></div>
                                                 <div class="text-gray-500 text-sm"><?= htmlspecialchars($row['email']) ?></div>
                                             </div>
                                         </div>

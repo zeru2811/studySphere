@@ -7,6 +7,3 @@ if (!isset($_SESSION['id'])) {
     header("Location: login.php");
     exit();
 }
-
-// If logged in, show content
-echo 'hello';

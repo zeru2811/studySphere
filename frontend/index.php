@@ -1,9 +1,16 @@
 <?php
 session_start(); 
-$_SESSION['role_id'] = 2;
+// $_SESSION['role_id'] = 2;
+// if (!isset($_SESSION['id'])) {
+//     header("Location: ../login.php");
+//     exit;
+// }
 $type = "Home";
 require '../templates/template_nav.php';
 require '../requires/connect.php';
+
+$roleId = isset($_SESSION['role_id']) ? intval($_SESSION['role_id']) : 0;
+
 
 
 
@@ -74,7 +81,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
                 <a href="about_us.php" class="bg-gray-900 text-white px-5 py-2 rounded-md hover:bg-gray-800 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700">
                     Learn More
                 </a>
-                <a href="<?= isset($_SESSION['user_id']) ? 'learning_path.php' : 'login.php' ?>" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <a href="<?= isset($_SESSION['user_id']) ? 'learning_path.php' : 'login.php' ?>" class="bg-purple-600 text-white px-5 py-2 rounded-md hover:bg-purple-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                     Get Started
                 </a>
             </div>
@@ -96,7 +103,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
 <section class="text-center py-10 bg-gray-50">
     <h2 class="text-2xl font-semibold">Courses Offered</h2>
     <p class="text-gray-600 mt-2">Explore a variety of subjects and courses tailored to your needs.</p>
-    <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-4">Browse Now</button>
+    <button class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mt-4">Browse Now</button>
 
     <div class="grid md:grid-cols-3 gap-6 px-4 max-w-6xl mt-5 mx-auto">
         <?php if ($result && $result->num_rows > 0): ?>
@@ -105,7 +112,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
                     <img src="<?= htmlspecialchars($row['thumbnail']) ?>" class="w-full h-48 object-cover rounded" alt="Course Thumbnail" />
                     <h3 class="font-semibold mt-2 text-lg"><?= htmlspecialchars($row['name']) ?></h3>
                     <p class="text-sm text-gray-600"><?= htmlspecialchars($row['teacher_name']) ?></p>
-                    <div class="text-blue-600 font-bold mt-1">Ks <?= number_format($row['price']) ?></div>
+                    <div class="text-purple-600 font-bold mt-1">Ks <?= number_format($row['price']) ?></div>
                 </a>
             <?php endwhile; ?>
         <?php else: ?>
@@ -155,7 +162,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
 
     <div class="text-center mt-8">
         <a href="/discussions.html"
-           class="bg-blue-600 text-white px-5 py-3 rounded-md hover:bg-blue-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+           class="bg-purple-600 text-white px-5 py-3 rounded-md hover:bg-purple-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
             View All Discussions
         </a>
     </div>
@@ -176,7 +183,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
                     <div class="p-4">
                         <h3 class="font-semibold text-lg text-gray-800"><?= htmlspecialchars($row['title']) ?></h3>
                         <p class="text-sm text-gray-600 mt-1"><?= htmlspecialchars(mb_strimwidth($row['description'], 0, 100, '...')) ?></p>
-                        <span class="text-xs text-blue-600 font-medium mt-2 inline-block">Read more →</span>
+                        <span class="text-xs text-purple-600 font-medium mt-2 inline-block">Read more →</span>
                     </div>
                 </a>
             <?php endwhile; ?>
@@ -187,7 +194,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
 
 
     <div class="mt-8 text-center">
-        <a href="#" class="bg-blue-600 text-white px-4 py-3 mt-4 rounded-md hover:bg-blue-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">View All Articles</a>
+        <a href="#" class="bg-purple-600 text-white px-4 py-3 mt-4 rounded-md hover:bg-purple-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">View All Articles</a>
     </div>
 </section>
 
@@ -206,7 +213,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
                         <p class="text-gray-600 mt-3 text-sm sm:text-base truncate-text" data-full-text="<?= htmlspecialchars($testimonial['text']) ?>">
                             <?= htmlspecialchars($testimonial['text']) ?>
                         </p>
-                        <a href="testimonials.html" class="text-blue-500 text-sm mt-2 inline-block hover:underline">Read More</a>
+                        <a href="testimonials.html" class="text-purple-500 text-sm mt-2 inline-block hover:underline">Read More</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -271,7 +278,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
     <section class="py-10 px-4 bg-gray-100 text-center">
         <h2 class="text-xl font-semibold">Need Help?</h2>
         <p class="text-sm text-gray-600 mb-4">Contact our support team for assistance or ask your questions.</p>
-        <a href="contact.php" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Contact Us</a>
+        <a href="contact.php" class="bg-purple-600 text-white px-5 py-2 rounded-md hover:bg-purple-700 hover:scale-105 transition-all duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">Contact Us</a>
 
         <div class="mt-6 max-w-xl mx-auto text-sm text-gray-700">
             <div class="bg-white border p-4 rounded">

@@ -103,7 +103,7 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == '1') {
         $sql = "INSERT INTO users (name, email, password, role_id, phone, gender, status) VALUES ('$name', '$email', '$hashed_password', '$roleId', '$phone', '$gender', TRUE)";
         $result  = $mysqli->query($sql);
         if ($result) {
-            $url = $base_url . 'login.php?success=Register Success';
+            $url = 'login.php?success=Register Success';
             $suc_msg = "Register Successfully";
             echo "<script>
                 setTimeout(function() {

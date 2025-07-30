@@ -5,7 +5,7 @@ require "../requires/title.php";
 require "../requires/connect.php";
 $currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "Lessons";
-require './templates/admin_sidebar.php';
+
 
 // Handle Add/Edit Lesson Form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -117,6 +117,7 @@ while ($row = $result->fetch_assoc()) {
     </script>
     <link rel="stylesheet" href="./css/main.css">
 </head>
+<?php require './templates/admin_sidebar.php'; ?>
 <body class="bg-gray-50 w-full min-h-screen p-4 md:p-6">
 
 <div class="max-w-6xl w-full pt-10 mx-auto">
@@ -182,7 +183,15 @@ while ($row = $result->fetch_assoc()) {
                                 <td class="px-6 py-4 text-sm"><?= date('M j, Y h:i A', strtotime($lesson['created_at'])) ?></td>
                                 <td class="px-6 py-4 text-right text-sm">
                                     <div class="flex justify-end gap-2">
-                                        <button onclick="openEditModal(<?= $lesson['id'] ?>, '<?= addslashes($lesson['lessonUrl']) ?>', '<?= addslashes($lesson['title']) ?>', '<?= addslashes($lesson['description']) ?>', '<?= $lesson['duration'] ?>')" class="text-indigo-600 hover:text-indigo-900"><i class="fas fa-edit"></i></button>
+                                        <button onclick='openEditModal(
+                                            <?= json_encode($lesson['id']) ?>,
+                                            <?= json_encode($lesson['lessonUrl']) ?>,
+                                            <?= json_encode($lesson['title']) ?>,
+                                            <?= json_encode($lesson['description']) ?>,
+                                            <?= json_encode($lesson['duration']) ?>
+                                        )' class="text-indigo-600 hover:text-indigo-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                         <button onclick="confirmDelete(<?= $lesson['id'] ?>)" class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </td>

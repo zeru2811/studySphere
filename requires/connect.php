@@ -151,6 +151,7 @@ function create_table($mysqli){
         courseId INT,
         subjectId INT,
         lessonId INT,
+        display_order INT NOT NULL DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
@@ -198,43 +199,52 @@ function create_table($mysqli){
         FOREIGN KEY (userId) REFERENCES users(id)
     )";
     if ($mysqli->query($sql) === false) return false;
-
     // enroll_course
     $sql = "CREATE TABLE IF NOT EXISTS enroll_course (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        userId INT,
-        courseId INT,
-        status BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (userId) REFERENCES users(id),
-        FOREIGN KEY (courseId) REFERENCES courses(id)
-    )";
+        userId INT NOT NULL,
+        courseId INT NOT NULL,
+        payment_status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+        enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
+        UNIQUE (userId, courseId) -- Prevents duplicate enrollments
+    ) ENGINE=InnoDB";
+
     if ($mysqli->query($sql) === false) return false;
 
-    // payment_type
+    // payment_type - Only KPay and Cash
     $sql = "CREATE TABLE IF NOT EXISTS payment_type (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
+        name ENUM('kpay', 'cash') NOT NULL UNIQUE, -- Only these two options
+        description VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB";
+
     if ($mysqli->query($sql) === false) return false;
 
-    // enroll_payment
+    // enroll_payment (simplified for KPay/Cash only)
     $sql = "CREATE TABLE IF NOT EXISTS enroll_payment (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        paymentTypeId INT,
-        enroll_courseId INT,
-        transitionId VARCHAR(100),
-        path TEXT,
+        paymentTypeId INT NOT NULL,
+        enroll_courseId INT NOT NULL,
+        transitionId VARCHAR(100) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL, -- Better for currency than INT
+        screenshot_path VARCHAR(255) NULL, -- Only for KPay
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (paymentTypeId) REFERENCES payment_type(id),
-        FOREIGN KEY (enroll_courseId) REFERENCES enroll_course(id)
-    )";
+        FOREIGN KEY (enroll_courseId) REFERENCES enroll_course(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB";
+
     if ($mysqli->query($sql) === false) return false;
 
+    // Insert the two payment types if they don't exist
+    $sql = "INSERT IGNORE INTO payment_type (name, description) VALUES 
+        ('kpay', 'KBZ Pay Mobile Payment'),
+        ('cash', 'Cash Payment')";
+    if ($mysqli->query($sql) === false) return false;
+    
     // module
     $sql = "CREATE TABLE IF NOT EXISTS module (
         id INT AUTO_INCREMENT PRIMARY KEY,
