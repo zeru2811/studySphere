@@ -28,6 +28,9 @@
                 <i class="fas fa-book mr-3"></i> Courses
             </a>
 
+            <a href="category.php" class="block py-3 px-6 <?= $currentPage == 'category.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-tags mr-3"></i> Course Category
+            </a>
             <a href="subject.php" class="block py-3 px-6 <?= $currentPage == 'subject.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
                 <i class="fas fa-chalkboard-teacher mr-3"></i>Subject
             </a>
