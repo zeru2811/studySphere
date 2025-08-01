@@ -42,6 +42,14 @@ function create_table($mysqli){
     )";
     if ($mysqli->query($sql) === false) return false;
 
+    // // Insert default roles if they don't exist
+    // $sql = "INSERT IGNORE INTO role (name) VALUES 
+    //     ('Admin'),
+    //     ('Teacher'),
+    //     ('Student'),
+    //     ('External User')";
+    // if ($mysqli->query($sql) === false) return false;
+    
     $sql = "CREATE TABLE IF NOT EXISTS category (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(50) NOT NULL,
@@ -60,7 +68,7 @@ function create_table($mysqli){
         gender ENUM('male', 'female', 'other') DEFAULT NULL, 
         role_id INT,
         uniqueId VARCHAR(100) UNIQUE,
-        thumbnail TEXT,
+        profile_photo TEXT,
         status BOOLEAN DEFAULT TRUE,
         note VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

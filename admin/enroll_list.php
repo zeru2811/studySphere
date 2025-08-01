@@ -6,6 +6,8 @@
     $currentPage = basename($_SERVER['PHP_SELF']);
     $pagetitle = "Enroll Course List";
 
+    
+
     // Handle Excel Export
     if (isset($_GET['export'])){
         header('Content-Type: application/vnd.ms-excel');
@@ -89,19 +91,21 @@
         $status = isset($_GET['status']) ? $_GET['status'] : '';
     
         $query = "SELECT 
-                    ec.id, 
-                    ec.payment_status, 
-                    ec.enrolled_at, 
-                    ec.updated_at,
-                    u.name as user_name,
-                    u.email as user_email,
-                    u.phone as user_phone,
-                    c.name as course_name,
-                    c.price as course_price
-                  FROM enroll_course ec
-                  JOIN users u ON ec.userId = u.id
-                  JOIN courses c ON ec.courseId = c.id
-                  WHERE 1=1";
+                ec.id, 
+                ec.payment_status, 
+                ec.enrolled_at, 
+                ec.updated_at,
+                u.name AS user_name,
+                u.email AS user_email,
+                u.phone AS user_phone,
+                c.name AS course_name,
+                c.price AS course_price,
+                ep.amount AS payment_amount
+            FROM enroll_course ec
+            JOIN users u ON ec.userId = u.id
+            JOIN courses c ON ec.courseId = c.id
+            LEFT JOIN enroll_payment ep ON ep.enroll_courseId = ec.id
+            WHERE 1=1";
     
         $params = [];
         $types = '';
@@ -306,7 +310,7 @@
                                     <!-- Course - Always visible -->
                                     <td class="px-4 py-4">
                                         <div class="text-sm font-medium text-gray-900"><?= htmlspecialchars($enrollment['course_name']) ?></div>
-                                        <div class="text-sm text-gray-500">Ks<?= number_format($enrollment['course_price'], 2) ?></div>
+                                        <div class="text-sm text-gray-500">Ks<?= number_format($enrollment['payment_amount'], 2) ?></div>
                                     </td>
                             
                                     <!-- Payment Status - Hidden on mobile and tablet -->
@@ -347,6 +351,11 @@
                                                     title="View Details">
                                                 <i class="fas fa-info-circle"></i>
                                             </button>
+
+                                            <a href="exportReceipt.php?id=<?= $enrollment['id'] ?>" target="_blank"
+                                               class="text-green-600 hover:text-green-900" title="Export Receipt">
+                                                <i class="fas fa-file-excel"></i>
+                                            </a>
                                     
                                             <!-- Edit button - hidden on mobile -->
                                             <button onclick="openStatusModal(<?= $enrollment['id'] ?>, '<?= $enrollment['payment_status'] ?>')"
@@ -361,6 +370,9 @@
                                                     title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+
+
+                                        
                                         </div>
                                     </td>
                                 </tr>
