@@ -56,19 +56,19 @@ require '../requires/connect.php';
           <div class="sm:text-center lg:text-left">
             <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
               <span class="block">Redefining</span>
-              <span class="block text-primary-600">Education</span>
+              <span class="block text-indigo-600">Education</span>
             </h1>
             <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
               Study Sphere is transforming how the world learns. Our platform combines cutting-edge technology with proven educational methods to create personalized learning experiences.
             </p>
             <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
               <div class="rounded-md shadow">
-                <a href="./courses.php" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10">
+                <a href="./courses.php" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
                   Explore Courses
                 </a>
               </div>
               <div class="mt-3 sm:mt-0 sm:ml-3">
-                <a href="viber://chat?number=+959943646637" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 md:py-4 md:text-lg md:px-10">
+                <a href="viber://chat?number=+959943646637" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10">
                   Meet Our Team
                 </a>
               </div>
@@ -108,7 +108,7 @@ require '../requires/connect.php';
             <div class="mt-10">
               <div class="flex">
                 <div class="flex-shrink-0">
-                  <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
+                  <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
@@ -125,7 +125,7 @@ require '../requires/connect.php';
               <div class="mt-8">
                 <div class="flex">
                   <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
                       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                       </svg>
@@ -143,7 +143,7 @@ require '../requires/connect.php';
               <div class="mt-8">
                 <div class="flex">
                   <div class="flex-shrink-0">
-                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
                       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                       </svg>
@@ -169,48 +169,48 @@ require '../requires/connect.php';
   </section>
 
   <!-- Stats -->
-  <div class="bg-primary-700">
+  <div class="bg-indigo-700">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8 lg:py-20">
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
           Trusted by learners worldwide
         </h2>
-        <p class="mt-3 text-xl text-primary-200 sm:mt-4">
+        <p class="mt-3 text-xl text-indigo-200 sm:mt-4">
           Join millions of people who are already learning on Study Sphere.
         </p>
       </div>
       <div class="mt-10 text-center sm:max-w-3xl sm:mx-auto sm:grid sm:grid-cols-3 sm:gap-8">
         <div>
-          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary-600 text-white">
+          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-indigo-600 text-white">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div class="mt-5">
             <div class="text-5xl font-extrabold text-white">2M+</div>
-            <div class="mt-1 text-base font-medium text-primary-200">Learners</div>
+            <div class="mt-1 text-base font-medium text-indigo-200">Learners</div>
           </div>
         </div>
         <div class="mt-10 sm:mt-0">
-          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary-600 text-white">
+          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-indigo-600 text-white">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
             </svg>
           </div>
           <div class="mt-5">
             <div class="text-5xl font-extrabold text-white">5K+</div>
-            <div class="mt-1 text-base font-medium text-primary-200">Courses</div>
+            <div class="mt-1 text-base font-medium text-indigo-200">Courses</div>
           </div>
         </div>
         <div class="mt-10 sm:mt-0">
-          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary-600 text-white">
+          <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-indigo-600 text-white">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div class="mt-5">
             <div class="text-5xl font-extrabold text-white">190+</div>
-            <div class="mt-1 text-base font-medium text-primary-200">Countries</div>
+            <div class="mt-1 text-base font-medium text-indigo-200">Countries</div>
           </div>
         </div>
       </div>
@@ -234,7 +234,7 @@ require '../requires/connect.php';
           <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
             <div class="-mt-6">
               <div>
-                <span class="inline-flex items-center justify-center p-3 bg-primary-500 rounded-md shadow-lg">
+                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
                   <img class="h-16 w-16 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=128&h=128&q=60" alt="Sarah Johnson">
                 </span>
               </div>
@@ -251,7 +251,7 @@ require '../requires/connect.php';
           <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
             <div class="-mt-6">
               <div>
-                <span class="inline-flex items-center justify-center p-3 bg-primary-500 rounded-md shadow-lg">
+                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
                   <img class="h-16 w-16 rounded-full" src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=128&h=128&q=60" alt="Michael Chen">
                 </span>
               </div>
@@ -268,7 +268,7 @@ require '../requires/connect.php';
           <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
             <div class="-mt-6">
               <div>
-                <span class="inline-flex items-center justify-center p-3 bg-primary-500 rounded-md shadow-lg">
+                <span class="inline-flex items-center justify-center p-3 bg-indigo-500 rounded-md shadow-lg">
                   <img class="h-16 w-16 rounded-full" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=128&h=128&q=60" alt="David Rodriguez">
                 </span>
               </div>
@@ -300,7 +300,7 @@ require '../requires/connect.php';
         <div class="pt-6">
           <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-lg h-full">
             <div class="-mt-6">
-              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mx-auto">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -316,7 +316,7 @@ require '../requires/connect.php';
         <div class="pt-6">
           <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-lg h-full">
             <div class="-mt-6">
-              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mx-auto">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -332,7 +332,7 @@ require '../requires/connect.php';
         <div class="pt-6">
           <div class="flow-root bg-white rounded-lg px-6 pb-8 shadow-lg h-full">
             <div class="-mt-6">
-              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary-500 text-white mx-auto">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mx-auto">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>

@@ -23,17 +23,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $displayOrder = max(0, $displayOrder);
 
         if ($courseId > 0 && $subjectId > 0 && $lessonId > 0) {
-            $stmt = $mysqli->prepare("UPDATE course_subject SET courseId = ?, subjectId = ?, lessonId = ?, display_order = ? WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("iiiii", $courseId, $subjectId, $lessonId, $displayOrder, $id);
-                if ($stmt->execute()) {
-                    $_SESSION['message'] = "Curriculum connection updated successfully!";
+            // First get the course_subject_id from the lesson
+            $lessonQuery = $mysqli->prepare("SELECT course_subject_id FROM lessons WHERE id = ?");
+            $lessonQuery->bind_param("i", $lessonId);
+            $lessonQuery->execute();
+            $lesson = $lessonQuery->get_result()->fetch_assoc();
+            
+            if ($lesson && isset($lesson['course_subject_id'])) {
+                $stmt = $mysqli->prepare("UPDATE course_subject SET courseId = ?, subjectId = ?, display_order = ? WHERE id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("iiii", $courseId, $subjectId, $displayOrder, $lesson['course_subject_id']);
+                    if ($stmt->execute()) {
+                        $_SESSION['message'] = "Curriculum connection updated successfully!";
+                    } else {
+                        $_SESSION['error'] = "Update failed: " . $stmt->error;
+                    }
+                    $stmt->close();
                 } else {
-                    $_SESSION['error'] = "Update failed: " . $stmt->error;
+                    $_SESSION['error'] = "Failed to prepare update statement.";
                 }
-                $stmt->close();
             } else {
-                $_SESSION['error'] = "Failed to prepare update statement.";
+                $_SESSION['error'] = "Lesson not found or not properly connected to course_subject.";
             }
         } else {
             $_SESSION['error'] = "Please select all required fields.";
@@ -49,14 +59,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $displayOrder = max(0, $displayOrder);
 
         if ($courseId > 0 && $subjectId > 0 && count($lessonIds) > 0) {
-            foreach ($lessonIds as $lessonId) {
-                $lessonId = intval($lessonId);
-                $checkQuery = $mysqli->query("SELECT id FROM course_subject WHERE courseId = $courseId AND subjectId = $subjectId AND lessonId = $lessonId");
-                if ($checkQuery->num_rows == 0) {
-                    $mysqli->query("INSERT INTO course_subject (courseId, subjectId, lessonId, display_order) VALUES ($courseId, $subjectId, $lessonId, $displayOrder)");
+            // First check if this course-subject connection already exists
+            $checkStmt = $mysqli->prepare("SELECT id FROM course_subject WHERE courseId = ? AND subjectId = ?");
+            $checkStmt->bind_param("ii", $courseId, $subjectId);
+            $checkStmt->execute();
+            $result = $checkStmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                // Connection already exists - use the existing one
+                $row = $result->fetch_assoc();
+                $courseSubjectId = $row['id'];
+                
+                // Update display order if needed
+                $updateStmt = $mysqli->prepare("UPDATE course_subject SET display_order = ? WHERE id = ?");
+                $updateStmt->bind_param("ii", $displayOrder, $courseSubjectId);
+                $updateStmt->execute();
+                $updateStmt->close();
+                
+                $_SESSION['message'] = "Updated existing curriculum connection!";
+            } else {
+                // Create new connection if it doesn't exist
+                $stmt = $mysqli->prepare("INSERT INTO course_subject (courseId, subjectId, display_order) VALUES (?, ?, ?)");
+                if ($stmt) {
+                    $stmt->bind_param("iii", $courseId, $subjectId, $displayOrder);
+                    if ($stmt->execute()) {
+                        $courseSubjectId = $stmt->insert_id;
+                        $_SESSION['message'] = "Curriculum connection added successfully!";
+                    } else {
+                        $_SESSION['error'] = "Failed to create course-subject connection: " . $stmt->error;
+                        $stmt->close();
+                        header("Location: course_curriculum.php");
+                        exit;
+                    }
+                    $stmt->close();
+                } else {
+                    $_SESSION['error'] = "Failed to prepare insert statement.";
+                    header("Location: course_curriculum.php");
+                    exit;
                 }
             }
-            $_SESSION['message'] = "Curriculum connection added successfully!";
+            
+            // Now update each lesson with this course_subject_id
+            foreach ($lessonIds as $lessonId) {
+                $lessonId = intval($lessonId);
+                $updateLesson = $mysqli->prepare("UPDATE lessons SET course_subject_id = ? WHERE id = ?");
+                if ($updateLesson) {
+                    $updateLesson->bind_param("ii", $courseSubjectId, $lessonId);
+                    $updateLesson->execute();
+                    $updateLesson->close();
+                }
+            }
         } else {
             $_SESSION['error'] = "Please select all required fields.";
         }
@@ -68,6 +120,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Handle Delete
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
+    
+    // First find all lessons connected to this course_subject
+    $lessonsQuery = $mysqli->prepare("SELECT id FROM lessons WHERE course_subject_id = ?");
+    $lessonsQuery->bind_param("i", $id);
+    $lessonsQuery->execute();
+    $lessons = $lessonsQuery->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    // Remove the course_subject_id from all connected lessons
+    foreach ($lessons as $lesson) {
+        $updateLesson = $mysqli->prepare("UPDATE lessons SET course_subject_id = NULL WHERE id = ?");
+        $updateLesson->bind_param("i", $lesson['id']);
+        $updateLesson->execute();
+        $updateLesson->close();
+    }
+    
+    // Now delete the course_subject record
     $stmt = $mysqli->prepare("DELETE FROM course_subject WHERE id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $id);
@@ -86,11 +154,12 @@ if (isset($_GET['delete'])) {
 
 // Fetch existing curriculum connections
 $curriculum = [];
-$query = "SELECT cs.id, cs.courseId, cs.subjectId, cs.lessonId, c.name AS course_name, s.name AS subject_name, l.title AS lesson_title, cs.display_order 
+$query = "SELECT cs.id, cs.courseId, cs.subjectId, l.id AS lessonId, 
+          c.name AS course_name, s.name AS subject_name, l.title AS lesson_title, cs.display_order 
           FROM course_subject cs
           JOIN courses c ON cs.courseId = c.id
           JOIN subject s ON cs.subjectId = s.id
-          JOIN lessons l ON cs.lessonId = l.id
+          JOIN lessons l ON l.course_subject_id = cs.id
           ORDER BY cs.display_order, cs.id DESC";
 $result = $mysqli->query($query);
 while ($row = $result->fetch_assoc()) {
@@ -100,7 +169,7 @@ while ($row = $result->fetch_assoc()) {
 // Fetch dropdown options
 $courseResult = $mysqli->query("SELECT id, name FROM courses ORDER BY name");
 $subjectResult = $mysqli->query("SELECT id, name FROM subject ORDER BY name");
-$lessonResult = $mysqli->query("SELECT id, title FROM lessons ORDER BY title");
+$lessonResult = $mysqli->query("SELECT id, title FROM lessons WHERE course_subject_id IS NULL ORDER BY title");
 ?>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>

@@ -6,10 +6,9 @@ require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
 
-
 // Check if user is logged in
 if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -40,20 +39,6 @@ if ($showResult->num_rows > 0) {
     die("Course not found");
 }
 
-// Check if user is already enrolled
-$enrollmentCheck = $mysqli->query("SELECT * FROM enroll_course WHERE userId = $userId AND courseId = $courseId");
-if ($enrollmentCheck && $enrollmentCheck->num_rows > 0) {
-    $enrollment = $enrollmentCheck->fetch_assoc();
-    if ($enrollment['payment_status'] === 'paid') {
-        header("Location: subject.php?id=$courseId");
-        exit();
-    }
-}
-
-
-// Handle form submission
-
-
 // Get Rating
 $ratingSql = "SELECT AVG(ratingCount) AS avgRating, COUNT(*) AS total FROM course_feedback WHERE courseId = $courseId";
 $ratingResult = $mysqli->query($ratingSql);
@@ -82,11 +67,12 @@ if ($teacherRow = $teacherQuery->fetch_assoc()) {
 // Get Modules + Lessons
 $modules = [];
 $moduleQuery = $mysqli->query("
-    SELECT subject.id AS subjectId, subject.name AS subjectName
-    FROM course_subject 
-    JOIN subject ON course_subject.subjectId = subject.id
-    WHERE course_subject.courseId = $courseId
-    GROUP BY subject.id, subject.name
+    SELECT s.id AS subjectId, s.name AS subjectName
+    FROM course_subject cs
+    JOIN subject s ON cs.subjectId = s.id
+    WHERE cs.courseId = $courseId
+    GROUP BY s.id, s.name
+    ORDER BY cs.display_order ASC
 ");
 
 while ($module = $moduleQuery->fetch_assoc()) {
@@ -95,10 +81,11 @@ while ($module = $moduleQuery->fetch_assoc()) {
 
     // Lessons for the subject
     $lessonQuery = $mysqli->query("
-        SELECT lessons.title, lessons.duration
-        FROM course_subject
-        JOIN lessons ON course_subject.lessonId = lessons.id
-        WHERE course_subject.subjectId = $subjectId AND course_subject.courseId = $courseId
+        SELECT l.title, l.duration
+        FROM lessons l
+        JOIN course_subject cs ON l.course_subject_id = cs.id
+        WHERE cs.courseId = $courseId AND cs.subjectId = $subjectId
+        ORDER BY l.id
     ");
 
     while ($lesson = $lessonQuery->fetch_assoc()) {
@@ -107,20 +94,21 @@ while ($module = $moduleQuery->fetch_assoc()) {
 
     // Count and total duration
     $countQuery = $mysqli->query("
-        SELECT COUNT(*) AS totalLessons, SEC_TO_TIME(SUM(TIME_TO_SEC(lessons.duration))) AS totalDuration
-        FROM course_subject
-        JOIN lessons ON course_subject.lessonId = lessons.id
-        WHERE course_subject.subjectId = $subjectId AND course_subject.courseId = $courseId
+        SELECT COUNT(*) AS totalLessons, SEC_TO_TIME(SUM(TIME_TO_SEC(l.duration))) AS totalDuration
+        FROM lessons l
+        JOIN course_subject cs ON l.course_subject_id = cs.id
+        WHERE cs.courseId = $courseId AND cs.subjectId = $subjectId
     ");
 
     $allDurationQuery = $mysqli->query("
         SELECT 
             COUNT(*) AS totalLessons, 
-            SEC_TO_TIME(SUM(TIME_TO_SEC(lessons.duration))) AS totalDuration
-        FROM course_subject
-        JOIN lessons ON course_subject.lessonId = lessons.id
-        WHERE course_subject.courseId = $courseId
+            SEC_TO_TIME(SUM(TIME_TO_SEC(l.duration))) AS totalDuration
+        FROM lessons l
+        JOIN course_subject cs ON l.course_subject_id = cs.id
+        WHERE cs.courseId = $courseId
     ");
+    
     $countData = $countQuery->fetch_assoc();
     $allDurationData = $allDurationQuery->fetch_assoc();
 
@@ -147,105 +135,107 @@ while ($module = $moduleQuery->fetch_assoc()) {
     ];
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $userId = $_SESSION['id'];
-        $paymentMethod = $_POST['payment_method'] ?? null;
-        $transactionNo = $_POST['transaction_no'] ?? null;
-        
-        if (!$paymentMethod){
-            $_SESSION['error'] = "Please select a payment method.";
-        }
-
+    $userId = $_SESSION['id'];
+    $paymentMethod = $_POST['payment_method'] ?? null;
+    $transactionNo = $_POST['transaction_no'] ?? null;
     
+    if (!$paymentMethod){
+        $_SESSION['error'] = "Please select a payment method.";
+    }
 
-        //check duplication
-        $checkDuplication = $mysqli->prepare("SELECT id FROM enroll_course WHERE userId = ? AND courseId = ?");
-        $checkDuplication->bind_param("ii", $userId, $courseId);
-        $checkDuplication->execute();
-        $checkDuplication->store_result();
-        if ($checkDuplication && $checkDuplication->num_rows > 0) {
-            $_SESSION['warning'] = "You are already enrolled in this course. Please wait for approval.";
-            header("Location: enroll.php?id=$courseId");
-            exit();
-        }else{
-            // Step 1: Enroll Course
-            $stmt = $mysqli->prepare("INSERT INTO enroll_course (userId, courseId) VALUES (?, ?)");
-            $stmt->bind_param("ii", $userId, $courseId);
-            if (!$stmt->execute()){
-                $_SESSION['error'] = "Failed to enroll in course. Please try again.";
-            }
+    // Check duplication
+    $checkDuplication = $mysqli->prepare("SELECT id FROM enroll_course WHERE userId = ? AND courseId = ?");
+    $checkDuplication->bind_param("ii", $userId, $courseId);
+    $checkDuplication->execute();
+    $checkDuplication->store_result();
+    
+    if ($checkDuplication && $checkDuplication->num_rows > 0) {
+        $_SESSION['warning'] = "You are already enrolled in this course. Please wait for approval.";
+        header("Location: enroll.php?id=$courseId");
+        exit();
+    } else {
+        // Step 1: Enroll Course
+        $stmt = $mysqli->prepare("INSERT INTO enroll_course (userId, courseId) VALUES (?, ?)");
+        $stmt->bind_param("ii", $userId, $courseId);
+        if (!$stmt->execute()){
+            $_SESSION['error'] = "Failed to enroll in course. Please try again.";
         }
-        
-        $enrollCourseId = $stmt->insert_id;
+    }
+    
+    $enrollCourseId = $stmt->insert_id;
 
-        // Step 2: Get payment type ID
-        $stmt = $mysqli->prepare("SELECT id FROM payment_type WHERE name = ?");
-        $stmt->bind_param("s", $paymentMethod);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $paymentType = $result->fetch_assoc();
-        if (!$paymentType){
-            $_SESSION['error'] = "Invalid payment method.";
+    // Step 2: Get payment type ID
+    $stmt = $mysqli->prepare("SELECT id FROM payment_type WHERE name = ?");
+    $stmt->bind_param("s", $paymentMethod);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $paymentType = $result->fetch_assoc();
+    
+    if (!$paymentType){
+        $_SESSION['error'] = "Invalid payment method.";
+    }
+    
+    $paymentTypeId = $paymentType['id'];
+
+    // Step 3: Insert Payment
+    $path = null;
+    $amount = ($roleId == 3) ? $data['price'] / 2 : $data['price'];
+
+    if ($paymentMethod === 'kpay') {
+        if (empty($transactionNo)) {
+            $_SESSION['error'] = "Transaction number required.";
         }
-        $paymentTypeId = $paymentType['id'];
 
-        // Step 3: Insert Payment
-        $path = null;
-        $amount = ($roleId == 3) ? $data['price'] / 2 : $data['price'];
+        // Upload image
+        if (!isset($_FILES['kpay_image']) || $_FILES['kpay_image']['error'] !== 0) {
+            $_SESSION['error'] = "Please upload a valid KPay screenshot.";
+        }
 
-        if ($paymentMethod === 'kpay') {
-            if (empty($transactionNo)) throw new Exception("Transaction number required.");
+        $image = $_FILES['kpay_image'];
+        $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
+        $validExt = ['jpg', 'jpeg', 'png', 'webp'];
 
-            // Upload image
-            if (!isset($_FILES['kpay_image']) || $_FILES['kpay_image']['error'] !== 0) {
-                $_SESSION['error'] = "Please upload a valid KPay screenshot.";
-            }
+        if (!in_array($ext, $validExt)) {
+            $_SESSION['error'] = "Invalid image format. Allowed: " . implode(', ', $validExt);
+        }
 
-            $image = $_FILES['kpay_image'];
-            $ext = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
-            $validExt = ['jpg', 'jpeg', 'png', 'webp'];
+        if ($image['size'] > 2 * 1024 * 1024) {
+            $_SESSION['error'] = "Image size exceeds 2MB limit.";
+        }
 
-            if (!in_array($ext, $validExt)) {
-                $_SESSION['error'] = "Invalid image format. Allowed: " . implode(', ', $validExt);
-            }
+        $fileName = uniqid('', true) . '.' . $ext;
+        $uploadDir = __DIR__ . "/../uploads/payments";
+        $uploadPath = $uploadDir . "/" . $fileName;
+        $relativePath = $fileName;
 
-            if ($image['size'] > 2 * 1024 * 1024) {
-                $_SESSION['error'] = "Image size exceeds 2MB limit.";
-            }
-
-            $fileName = uniqid('', true) . '.' . $ext;
-            $uploadDir = __DIR__ . "/../uploads/payments";
-            $uploadPath = $uploadDir . "/" . $fileName;
-            $relativePath = $fileName;
-
-            // Ensure directory exists
-            if (!is_dir($uploadDir)) {
-                if (!mkdir($uploadDir, 0777, true)) {
-                    $_SESSION['error'] = "Failed to create upload directory.";
-                } else {
-                    chmod($uploadDir, 0777);
-                }
-            }
-
-            // Save file
-            if (!move_uploaded_file($image['tmp_name'], $uploadPath)) {
-                $_SESSION['error'] = "Failed to upload image. Please try again.";
+        // Ensure directory exists
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0777, true)) {
+                $_SESSION['error'] = "Failed to create upload directory.";
             } else {
-                $path = $relativePath;
+                chmod($uploadDir, 0777);
             }
-
-        } elseif ($paymentMethod === 'cash') {
-            // No image upload for cash payment
-            $path = null;
-            if (empty($transactionNo)) {
-                $transactionNo = 'cash-payment';
-            }
-
-        } else {
-            $_SESSION['error'] = "Invalid payment method selected.";
         }
 
+        // Save file
+        if (!move_uploaded_file($image['tmp_name'], $uploadPath)) {
+            $_SESSION['error'] = "Failed to upload image. Please try again.";
+        } else {
+            $path = $relativePath;
+        }
+
+    } elseif ($paymentMethod === 'cash') {
+        // No image upload for cash payment
+        $path = null;
+        if (empty($transactionNo)) {
+            $transactionNo = 'cash-payment';
+        }
+    } else {
+        $_SESSION['error'] = "Invalid payment method selected.";
+    }
+
+    if (!isset($_SESSION['error'])) {
         $stmt = $mysqli->prepare("INSERT INTO enroll_payment (paymentTypeId, enroll_courseId, transitionId, amount, screenshot_path) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("iisds", $paymentTypeId, $enrollCourseId, $transactionNo, $amount, $path);
         $stmt->execute();
@@ -253,17 +243,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['success'] = "Enrollment successful. Please wait for approval.";
         header("Location: enroll.php?id=$courseId");
         exit;
+    }
 }
 
 $checkEnroll = $mysqli->query("SELECT id, payment_status FROM enroll_course WHERE userId = $userId AND courseId = $courseId");
 if ($checkEnroll->num_rows > 0) {
     $enrollment = $checkEnroll->fetch_assoc();
     $enrollmentStatus = $enrollment['payment_status'] ?? 'pending';
-}else{
+} else {
     $enrollmentStatus = null;
 }
-
 ?>
+
+<!-- // Check if user is already enrolled
+// $enrollmentCheck = $mysqli->query("SELECT * FROM enroll_course WHERE userId = $userId AND courseId = $courseId");
+// if ($enrollmentCheck && $enrollmentCheck->num_rows > 0) {
+//     $enrollment = $enrollmentCheck->fetch_assoc();
+//     if ($enrollment['payment_status'] === 'paid') {
+//         header("Location: subject.php?id=$courseId");
+//         exit();
+//     }
+// } -->
+
+
 
 
 
@@ -747,10 +749,11 @@ if ($roleId == 3) {
             <p class="text-purple-100">Choose your preferred payment method</p>
         </div>
         
-        <div class="flex items-baseline flex-wrap gap-2 mt-3 px-6">
+        <div class="flex flex-col items-baseline flex-wrap gap-2 mt-3 px-6">
             <span class="text-3xl font-bold text-gray-900">
                 Ks<?= number_format($amount) ?>
             </span>
+            
 
             <?php if ($roleId == 3): ?>
                 <span class="text-lg text-gray-400 line-through">
@@ -764,9 +767,15 @@ if ($roleId == 3) {
             <?php endif; ?>
         </div>
 
+        <div class="block text-sm text-gray-500 mt-3 px-6">
+            <span class="text-sm text-gray-500">Account Number - <b>09681652929</b></span>
+            <br>
+            <span class="text-sm text-gray-500">Account Name - <b>Wai Yan Ko Ko</b></span>
+        </div>
+
         <!-- Payment Form -->
-        <form method="POST" enctype="multipart/form-data" class="p-4 space-y-6">
-            <input type="hidden" name="course_id" value="<?= $courseId ?>">
+        <form method="POST" enctype="multipart/form-data" class="px-6 py-2 space-y-6">
+           
             <!-- Payment Method -->
             <div>
                 <label class="block text-gray-700 font-medium mb-3">Payment Method</label>
@@ -826,6 +835,7 @@ if ($roleId == 3) {
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="course_id" value="<?= $courseId ?>">
 
             <!-- Submit Button -->
             <button type="submit"

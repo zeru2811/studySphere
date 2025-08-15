@@ -1,5 +1,7 @@
 <?php 
 session_start(); 
+// var_dump("<strong>Server time: </strong>" . date("Y-m-d H:i:s") . "<br>");
+// exit();
 $type = "Courses";
 require '../templates/template_nav.php';
 require '../requires/connect.php';
@@ -43,7 +45,21 @@ foreach ($courses as $course) {
 }
 
 // Find latest 3 course IDs for NEW badge
-$newCourseIds = array_slice(array_column($courses, 'id'), 0, 3);
+// $newCourseIds = array_slice(array_column($courses, 'id'), 0, 3);
+$newCourseIds = [];
+$sql = "SELECT id FROM courses WHERE created_at >= NOW() - INTERVAL 1 DAY";
+$result = $mysqli->query($sql);
+
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $newCourseIds[] = (int) $row['id'];
+    }
+}
+
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +105,7 @@ $newCourseIds = array_slice(array_column($courses, 'id'), 0, 3);
             <?php foreach ($popularCourses as $course): ?>
                 <a href="enroll.php?id=<?= $course['id'] ?>" class="course-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div class="relative">
-                        <img src="/uploads/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>" alt="<?= htmlspecialchars($course['name']) ?>" class="w-full h-48 object-cover">
+                        <img src="../uploads/thumbnails/<?= htmlspecialchars($course['thumbnail']) ?>" alt="<?= htmlspecialchars($course['name']) ?>" class="w-full h-48 object-cover">
                         <?php if (in_array($course['id'], $newCourseIds)): ?>
                             <div class="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded">NEW</div>
                         <?php elseif (!empty($ratings[$course['id']]) && $ratings[$course['id']] >= 5): ?>
@@ -99,10 +115,10 @@ $newCourseIds = array_slice(array_column($courses, 'id'), 0, 3);
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
                             <span class="text-sm font-medium text-indigo-600"><?= strtoupper($course['catName']) ?></span>
-                            <span class="text-sm text-gray-500"><?= rand(15, 45) ?> hours</span>
+                            <span class="text-sm text-gray-500"><?= date('Y-m-d', strtotime($course['created_at'])) ?></span>
                         </div>
                         <h3 class="course-title text-xl font-bold text-gray-900 mb-3 transition-colors duration-300"><?= htmlspecialchars($course['name']) ?></h3>
-                        <p class="text-gray-600 mb-4"><?= htmlspecialchars($course['description']) ?></p>
+                        <p class="text-gray-600 mb-4"><?= htmlspecialchars($course['title']) ?></p>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center">
                                 <div class="flex -space-x-1">

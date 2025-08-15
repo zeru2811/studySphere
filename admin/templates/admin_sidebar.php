@@ -7,7 +7,7 @@
 
 <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <div class="sidebar bg-white w-64 shadow-lg py-6 flex flex-col lg:relative">
+    <div class="sidebar bg-white  shadow-lg py-6 flex flex-col lg:relative">
         <div class="px-6 mb-8">
             <h1 class="text-2xl font-bold text-primary flex items-center">
                 <i class="fas fa-graduation-cap mr-2"></i>
@@ -38,15 +38,33 @@
             <a href="lesson.php" class="block py-3 px-6 <?= $currentPage == 'lesson.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
                 <i class="fas fa-chalkboard-teacher mr-3"></i>Lesson
             </a>
+
+            <a href="comment.php" class="block py-3 px-6 <?= $currentPage == 'comment.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-comment mr-3"></i> Comment
+            </a>
+
+            <a href="blog.php" class="block py-3 px-6 <?= $currentPage == 'blog.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-pencil-alt mr-3"></i> Blog
+            </a>
+
+             <a href="learning_path.php" class="block py-3 px-6 <?= $currentPage == 'learning_path.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-road mr-3"></i> Learning Path
+            </a>
             
+            <a href="learning_path_course.php" class="block py-3 px-6 <?= $currentPage == 'learning_path_course.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-link mr-3"></i> Learning Path Course
+            </a>
             <a href="course_curriculum.php" class="block py-3 px-6 <?= $currentPage == 'course_curriculum.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
                 <i class="fas fa-link mr-3"></i> Create Connection
             </a>
             <a href="enroll_list.php" class="block py-3 px-6 <?= $currentPage == 'enroll_list.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
-                <i class="fas fa-link mr-3"></i> Enroll Course
+                <i class="fas fa-list mr-3"></i> Enroll List
             </a>
-            <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
-                <i class="fas fa-comments mr-3"></i> Discussions
+            <a href="module.php" class="block py-3 px-6 <?= $currentPage == 'module.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-layer-group mr-3"></i> Module
+            </a>
+            <a href="answer.php" class="block py-3 px-6 <?= $currentPage == 'answer.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' ?>">
+                <i class="fas fa-reply mr-3"></i> Answer
             </a>
             <a href="../frontend/" class="block py-3 px-6">
                 <i class="fas fa-link mr-3"></i>Go to Frontend

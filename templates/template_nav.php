@@ -1,11 +1,15 @@
 <?php 
-  session_start();
+  // session_start();
   $title = "Study Sphere";
   require "template_header.php";
 ?>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+  body{
+    font-family: 'Space Grotesk', sans-serif;
+  }
   .dropdown-enter {
     max-height: 0;
     opacity: 0;
@@ -24,7 +28,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center py-4">
       <?php if ($_SESSION['role_id'] == 1 || $_SESSION['role_id'] == 2):?>
-        <a href="../admin/index.php"
+        <a href="../admin/user_management.php"
            class="absolute top-3 left-4 px-4 py-2 font-semibold rounded-xl shadow hover:bg-purple-600 hover:text-white transition duration-200">
            <i class="fas fa-arrow-left mr-2"></i>Back
         </a>
