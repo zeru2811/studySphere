@@ -5,7 +5,7 @@ $type = "Enroll";
 require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
-
+// $_SESSION['id'] = 1;
 // Check if user is logged in
 if (!isset($_SESSION['id'])) {
     header("Location: ../login.php");

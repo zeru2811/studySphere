@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+
 <script>
     setTimeout(() => {
         document.querySelector('#alert-success')?.remove();

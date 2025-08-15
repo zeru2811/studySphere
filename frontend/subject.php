@@ -4,7 +4,7 @@ $type = "Subject";
 require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
-
+$_SESSION['id'] = 1;
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   header("Location: courses.php");
   exit();
@@ -166,20 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p class="text-gray-600"><?= htmlspecialchars($course['title']) ?></p>
             </div>
 
-            <?php if ($isEnrolled): ?>
-              <div class="flex items-center space-x-4">
-                <div class="relative w-12 h-12">
-                  <svg class="w-full h-full" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="16" fill="none" class="stroke-gray-200" stroke-width="3"></circle>
-                    <circle cx="18" cy="18" r="16" fill="none" class="stroke-indigo-600 progress-ring__circle" stroke-width="3" stroke-dasharray="100" stroke-dashoffset="<?= 100 - $progress ?>"></circle>
-                  </svg>
-                  <span class="absolute inset-0 flex items-center justify-center text-xs font-bold"><?= $progress ?>%</span>
-                </div>
-                <a href="?id=<?= $courseId ?>&lesson_id=<?= $currentLesson['id'] ?? '' ?>" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-                  Continue
-                </a>
-              </div>
-            <?php endif; ?>
+            
           </div>
         </div>
 

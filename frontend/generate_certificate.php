@@ -75,59 +75,78 @@ $logQuery = $mysqli->prepare("
 $logQuery->bind_param("sii", $certificateId, $userId, $courseId);
 $logQuery->execute();
 
-// ----------- CREATE CERTIFICATE IMAGE WITH GD -------------
+
+// ----------- CREATE CERTIFICATE IMAGE -------------
 $width  = 1200;
 $height = 848;
 
-// Load background image (PNG or JPG) - transparent border design works best
-$backgroundPath = __DIR__ . '/../assets/certificate_bg.png'; // replace with your image path
+// Create white background
+$canvas = imagecreatetruecolor($width, $height);
+$white  = imagecolorallocate($canvas, 255, 255, 255);
+imagefilledrectangle($canvas, 0, 0, $width, $height, $white);
+
+// Load background and scale it
+$backgroundPath = __DIR__ . '/../assets/img/certificate-bg.png';
 if (file_exists($backgroundPath)) {
-    $image = imagecreatefrompng($backgroundPath);
-} else {
-    $image = imagecreatetruecolor($width, $height);
-    $bgColor = imagecolorallocate($image, 249, 247, 232);
-    imagefilledrectangle($image, 0, 0, $width, $height, $bgColor);
+    $bg = imagecreatefrompng($backgroundPath);
+    $bgWidth  = imagesx($bg);
+    $bgHeight = imagesy($bg);
+    imagecopyresampled($canvas, $bg, 0, 0, 0, 0, $width, $height, $bgWidth, $bgHeight);
+    imagedestroy($bg);
 }
+$image = $canvas;
 
 // Text colors
-$textColor   = imagecolorallocate($image, 51, 51, 51);
-$redColor    = imagecolorallocate($image, 139, 0, 0);
+$titleColor    = imagecolorallocate($image, 50, 50, 50);
+$subtitleColor = imagecolorallocate($image, 80, 80, 80);
+$nameColor     = imagecolorallocate($image, 20, 40, 80);
+$highlight     = imagecolorallocate($image, 139, 0, 0);
 
 // Fonts
 $titleFont   = __DIR__ . '/../assets/fonts/Open_Sans/static/OpenSans-Bold.ttf';
 $bodyFont    = __DIR__ . '/../assets/fonts/Open_Sans/static/OpenSans-Regular.ttf';
 
+// Helper function to center text
+function centerText($img, $text, $font, $size, $y, $color) {
+    $bbox = imagettfbbox($size, 0, $font, $text);
+    $textWidth = $bbox[2] - $bbox[0];
+    $x = (imagesx($img) - $textWidth) / 2;
+    imagettftext($img, $size, 0, $x, $y, $color, $font, $text);
+}
+
 // Title
-imagettftext($image, 48, 0, 280, 180, $redColor, $titleFont, "Certificate of Completion");
+centerText($image, "Certificate of Completion", $titleFont, 54, 200, $highlight);
 
 // Subtitle
-imagettftext($image, 22, 0, 460, 230, $textColor, $bodyFont, "This is to certify that");
+centerText($image, "This is to certify that", $bodyFont, 24, 270, $subtitleColor);
 
 // Name
-imagettftext($image, 38, 0, 380, 300, $textColor, $titleFont, $user['name']);
+centerText($image, strtoupper($user['name']), $titleFont, 42, 350, $nameColor);
 
-// Course line
-imagettftext($image, 22, 0, 390, 360, $textColor, $bodyFont, "has successfully completed the course:");
+// Course description
+centerText($image, "has successfully completed the course:", $bodyFont, 24, 410, $subtitleColor);
 
 // Course name
-imagettftext($image, 28, 0, 340, 410, $redColor, $titleFont, $course['name']);
+centerText($image, $course['name'], $titleFont, 30, 470, $highlight);
 
-// Certificate ID & Date
-imagettftext($image, 18, 0, 400, 500, $textColor, $bodyFont, "Certificate ID: $certificateId");
-imagettftext($image, 18, 0, 430, 530, $textColor, $bodyFont, "Issued on: " . date("F j, Y"));
+// Certificate ID
+centerText($image, "Certificate ID: $certificateId", $bodyFont, 18, 530, $subtitleColor);
 
-// Add signature
-$signaturePath = __DIR__ . '/../assets/signatures/signature.png'; // transparent PNG of Zeru's signature
+// Date
+centerText($image, "Issued on: " . date("F j, Y"), $bodyFont, 18, 560, $subtitleColor);
+
+// Signature
+$signaturePath = __DIR__ . '/../assets/signatures/signature.png';
 if (file_exists($signaturePath)) {
     $signature = imagecreatefrompng($signaturePath);
     $sigWidth  = imagesx($signature);
     $sigHeight = imagesy($signature);
-    imagecopyresampled($image, $signature, 450, 580, 0, 0, 200, 80, $sigWidth, $sigHeight);
+    imagecopyresampled($image, $signature, 500, 600, 0, 0, 200, 80, $sigWidth, $sigHeight);
     imagedestroy($signature);
 }
 
-// Add "Founder" label
-imagettftext($image, 18, 0, 500, 680, $textColor, $bodyFont, "Zeru, Founder");
+// Founder label
+centerText($image, "Zeru, Founder", $bodyFont, 18, 700, $subtitleColor);
 
 // Output
 header('Content-Type: image/png');
