@@ -3,6 +3,8 @@ date_default_timezone_set('Asia/Yangon');
 $server_name = "localhost";
 $user_name = "root";
 $password = "";
+// $user_name = "zuzadpsz_sphere_user";
+// $password = "WI0kst3p=OEto~w]";
 
 $mysqli = new mysqli($server_name, $user_name, $password);
 
@@ -13,6 +15,7 @@ if($mysqli->connect_errno){
 
 create_database($mysqli);
 function create_database($mysqli){
+    // zuzadpsz_sphere
     $sql = "CREATE DATABASE IF NOT EXISTS `sphere` 
         DEFAULT CHARACTER SET utf8mb4 
         COLLATE utf8mb4_general_ci";
@@ -44,12 +47,12 @@ function create_table($mysqli){
     if ($mysqli->query($sql) === false) return false;
 
     // // Insert default roles if they don't exist
-    $sql = "INSERT IGNORE INTO role (name) VALUES 
-        ('Admin'),
-        ('Teacher'),
-        ('Student'),
-        ('External User')";
-    if ($mysqli->query($sql) === false) return false;
+    // $sql = "INSERT IGNORE INTO role (name) VALUES 
+    //     ('Admin'),
+    //     ('Teacher'),
+    //     ('Student'),
+    //     ('External User')";
+    // if ($mysqli->query($sql) === false) return false;
 
     $sql = "CREATE TABLE IF NOT EXISTS category (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -168,7 +171,6 @@ function create_table($mysqli){
         course_subject_id INT,
         description TEXT,
         duration VARCHAR(20),
-        is_complete BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (course_subject_id) REFERENCES course_subject(id) ON DELETE CASCADE
@@ -383,7 +385,7 @@ function create_table($mysqli){
     if ($mysqli->query($sql) === false) return false;
 
     // learning_path_courseId
-    $sql = "CREATE TABLE IF NOT EXISTS learning_path_courseId (
+    $sql = "CREATE TABLE IF NOT EXISTS learning_path_courseid (
         id INT AUTO_INCREMENT PRIMARY KEY,
         learning_pathId INT,
         courseId INT,
@@ -395,6 +397,19 @@ function create_table($mysqli){
     ) ENGINE=InnoDB";
     if ($mysqli->query($sql) === false) return false;
 
+    //check db for complete
+    $sql = "CREATE TABLE IF NOT EXISTS user_learning_path_course (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        learning_path_courseid_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (learning_path_courseid_id) REFERENCES learning_path_courseid(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB";
+    if ($mysqli->query($sql) === false) return false;
+
+    
     // blog
     $sql = "CREATE TABLE IF NOT EXISTS blog (
         id INT AUTO_INCREMENT PRIMARY KEY,

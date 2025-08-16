@@ -250,7 +250,7 @@ $answers = $mysqli->query("
         </div>
     </div>
     
-    <?php include 'footer.php' ?>
+
     
     <script>
     // Toggle like function with AJAX

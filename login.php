@@ -1,5 +1,7 @@
 <?php
 session_start();
+// var_dump(password_hash("Wai180180", PASSWORD_DEFAULT));
+// exit();
 require "requires/common.php";
 require "requires/title.php";
 require "requires/connect.php";

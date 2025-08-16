@@ -3,19 +3,19 @@ session_start();
 require "../requires/common.php";
 require "../requires/title.php";
 require "../requires/connect.php";
+$error = '';
 $currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "User Management";
-$_SESSION['role_id'] = 1;
-
-// if($_SESSION['role_id'] == 4 || $_SESSION['role_id'] == 3){
-
-// }
+if($_SESSION['role_id'] == 4 || $_SESSION['role_id'] == 3){
+    header("Location: ../login.php");
+    exit;
+}
 // unset ($_SESSION['role_id']);
 
-// if (!isset($_SESSION['id']) || $_SESSION['role_id'] != 1) {
-//     header("Location: ../login.php");
-//     exit;
-// }
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit;
+}
 
 $statsTotalUsers = $mysqli->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()['total'];
 $activeUsers = $mysqli->query("SELECT COUNT(*) as total FROM users WHERE status = 1")->fetch_assoc()['total'];

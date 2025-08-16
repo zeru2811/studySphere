@@ -12,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['learning_pathId']) &&
     $courseId = intval($_POST['courseId']);
     
     // Get the next sequence number
-    $result = $mysqli->query("SELECT MAX(sequence) as max_seq FROM learning_path_courseId WHERE learning_pathId = $learning_pathId");
+    $result = $mysqli->query("SELECT MAX(sequence) as max_seq FROM learning_path_courseid WHERE learning_pathId = $learning_pathId");
     $nextSequence = ($result && $row = $result->fetch_assoc()) ? $row['max_seq'] + 1 : 1;
     
-    $stmt = $mysqli->prepare("INSERT INTO learning_path_courseId (learning_pathId, courseId, sequence) VALUES (?, ?, ?)");
+    $stmt = $mysqli->prepare("INSERT INTO learning_path_courseid (learning_pathId, courseId, sequence) VALUES (?, ?, ?)");
     if ($stmt) {
         $stmt->bind_param("iii", $learning_pathId, $courseId, $nextSequence);
         if ($stmt->execute()) {
@@ -36,18 +36,18 @@ if (isset($_GET['remove'])) {
     $id = intval($_GET['remove']);
     $learning_pathId = intval($_GET['path_id']);
     
-    $stmt = $mysqli->prepare("DELETE FROM learning_path_courseId WHERE id = ?");
+    $stmt = $mysqli->prepare("DELETE FROM learning_path_courseid WHERE id = ?");
     if ($stmt) {
         $stmt->bind_param("i", $id);
         if ($stmt->execute()) {
             $_SESSION['message'] = "Course removed from learning path successfully.";
             
             // Re-sequence the remaining courses
-            $result = $mysqli->query("SELECT id FROM learning_path_courseId WHERE learning_pathId = $learning_pathId ORDER BY sequence");
+            $result = $mysqli->query("SELECT id FROM learning_path_courseid WHERE learning_pathId = $learning_pathId ORDER BY sequence");
             if ($result) {
                 $sequence = 1;
                 while ($row = $result->fetch_assoc()) {
-                    $updateStmt = $mysqli->prepare("UPDATE learning_path_courseId SET sequence = ? WHERE id = ?");
+                    $updateStmt = $mysqli->prepare("UPDATE learning_path_courseid SET sequence = ? WHERE id = ?");
                     $updateStmt->bind_param("ii", $sequence, $row['id']);
                     $updateStmt->execute();
                     $updateStmt->close();
@@ -73,7 +73,7 @@ if (isset($_POST['update_sequence'])) {
     foreach ($sequences as $id => $sequence) {
         $id = intval($id);
         $sequence = intval($sequence);
-        $stmt = $mysqli->prepare("UPDATE learning_path_courseId SET sequence = ? WHERE id = ? AND learning_pathId = ?");
+        $stmt = $mysqli->prepare("UPDATE learning_path_courseid SET sequence = ? WHERE id = ? AND learning_pathId = ?");
         $stmt->bind_param("iii", $sequence, $id, $learning_pathId);
         $stmt->execute();
         $stmt->close();
@@ -103,7 +103,7 @@ while ($row = $result->fetch_assoc()) {
 $path_courses = [];
 if ($learning_pathId > 0) {
     $query = "SELECT lpc.id, lpc.sequence, c.id as course_id, c.name, c.title, c.thumbnail 
-              FROM learning_path_courseId lpc
+              FROM learning_path_courseid lpc
               JOIN courses c ON lpc.courseId = c.id
               WHERE lpc.learning_pathId = $learning_pathId
               ORDER BY lpc.sequence";
@@ -119,7 +119,7 @@ if ($learning_pathId > 0) {
     $query = "SELECT c.id, c.name, c.title 
               FROM courses c
               WHERE c.id NOT IN (
-                  SELECT courseId FROM learning_path_courseId WHERE learning_pathId = $learning_pathId
+                  SELECT courseId FROM learning_path_courseid WHERE learning_pathId = $learning_pathId
               )
               ORDER BY c.name";
     $result = $mysqli->query($query);

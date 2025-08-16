@@ -13,8 +13,7 @@ function slugify($text) {
     $text = strtolower($text);
     return !empty($text) ? $text : 'n-a';
 }
-  
-$title = $_POST['title'];
+$title = $_POST['title'] ?? '';
 $slug = slugify($title);
 
 $sql = "SELECT * FROM blog ORDER BY created_at DESC";

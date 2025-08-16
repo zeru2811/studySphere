@@ -1,16 +1,35 @@
 <?php
+
+use FontLib\Table\Type\head;
+
 session_start();
 $type = "Subject";
 require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
-$_SESSION['id'] = 1;
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   header("Location: courses.php");
   exit();
 }
 
+
+
 $courseId = $_GET['id'];
+$userId = $_SESSION['id'];
+
+$sql = "SELECT COUNT(*) as total FROM enroll_course WHERE userId = ? AND courseId = ?";
+$stmt = $mysqli->prepare($sql);
+$stmt->bind_param("ii", $userId, $courseId);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+if ($row['total'] == 0) {
+    header("Location: enroll.php?id=$courseId");
+    exit();
+}
+
 
 // Fetch course details
 $courseQuery = $mysqli->prepare("SELECT * FROM courses WHERE id = ?");

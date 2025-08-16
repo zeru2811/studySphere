@@ -49,7 +49,7 @@ switch ($sort) {
         $query .= " ORDER BY lp.total_enrollments DESC";
         break;
     case 'duration':
-        $query .= " ORDER BY (SELECT SUM(c.totalHours) FROM learning_path_courseId lpc JOIN courses c ON c.id = lpc.courseId WHERE lpc.learning_pathId = lp.id) DESC";
+        $query .= " ORDER BY (SELECT SUM(c.totalHours) FROM learning_path_courseid lpc JOIN courses c ON c.id = lpc.courseId WHERE lpc.learning_pathId = lp.id) DESC";
         break;
     case 'newest':
     default:
@@ -145,7 +145,7 @@ $paths = $result->fetch_all(MYSQLI_ASSOC);
             <?php foreach ($paths as $path): 
                 // Get course count and total hours
                 $stmt = $mysqli->prepare("SELECT COUNT(*) as course_count, SUM(c.totalHours) as total_hours 
-                                        FROM learning_path_courseId lpc
+                                        FROM learning_path_courseid lpc
                                         JOIN courses c ON c.id = lpc.courseId
                                         WHERE lpc.learning_pathId = ?");
                 $stmt->bind_param("i", $path['id']);

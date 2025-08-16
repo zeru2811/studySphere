@@ -6,6 +6,7 @@ $basePath = '/studysphere/frontend';
 
 // Get path ID from URL
 $pathId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$userId = $_SESSION['id'] ?? 0;
 
 // Fetch learning path details
 $pathQuery = $mysqli->prepare("SELECT * FROM learning_path WHERE id = ?");
@@ -22,7 +23,7 @@ if (!$path) {
 // Fetch courses in this learning path
 $coursesQuery = $mysqli->prepare("
     SELECT c.* 
-    FROM learning_path_courseId lpc
+    FROM learning_path_courseid lpc
     JOIN courses c ON lpc.courseId = c.id
     WHERE lpc.learning_pathId = ?
     ORDER BY lpc.sequence
@@ -32,32 +33,14 @@ $coursesQuery->execute();
 $coursesResult = $coursesQuery->get_result();
 $courses = $coursesResult->fetch_all(MYSQLI_ASSOC);
 
-// Fetch teacher details for each course
-$teacherIds = array_column($courses, 'teacherId');
-$teachers = [];
-if (!empty($teacherIds)) {
-    $placeholders = implode(',', array_fill(0, count($teacherIds), '?'));
-    $types = str_repeat('i', count($teacherIds));
-    
-    $teachersQuery = $mysqli->prepare("
-        SELECT id, name, profile_photo, description 
-        FROM users 
-        WHERE id IN ($placeholders)
-    ");
-    $teachersQuery->bind_param($types, ...$teacherIds);
-    $teachersQuery->execute();
-    $teachersResult = $teachersQuery->get_result();
-    while ($teacher = $teachersResult->fetch_assoc()) {
-        $teachers[$teacher['id']] = $teacher;
-    }
-}
-
-// Calculate total duration and progress
+// Calculate total duration, progress, and check completion status
 $totalDuration = 0;
 $completedLessons = 0;
 $totalLessons = 0;
+$allCoursesComplete = true;
 
 foreach ($courses as $course) {
+    // Get total lessons count
     $lessonsQuery = $mysqli->prepare("
         SELECT COUNT(*) as total 
         FROM course_subject cs
@@ -67,12 +50,110 @@ foreach ($courses as $course) {
     $lessonsQuery->bind_param("i", $course['id']);
     $lessonsQuery->execute();
     $lessonsResult = $lessonsQuery->get_result();
-    $totalLessons += $lessonsResult->fetch_assoc()['total'];
+    $courseTotalLessons = $lessonsResult->fetch_assoc()['total'];
+    $totalLessons += $courseTotalLessons;
+    
+    // Get completed lessons count for this user
+    if ($userId) {
+        $completedQuery = $mysqli->prepare("
+            SELECT COUNT(*) as completed 
+            FROM lesson_completions lc
+            JOIN lessons l ON lc.lesson_id = l.id
+            JOIN course_subject cs ON l.course_subject_id = cs.id
+            WHERE lc.user_id = ? AND cs.courseId = ?
+        ");
+        $completedQuery->bind_param("ii", $userId, $course['id']);
+        $completedQuery->execute();
+        $completedResult = $completedQuery->get_result();
+        $completedCount = $completedResult->fetch_assoc()['completed'];
+        $completedLessons += $completedCount;
+        
+        // Check if this course is complete
+        if ($completedCount < $courseTotalLessons) {
+            $allCoursesComplete = false;
+        }
+    }
     
     $totalDuration += $course['totalHours'];
 }
 
 $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+
+// Record learning path completion if all courses are complete
+if ($allCoursesComplete && $userId) {
+    // Check if this course completion hasn't been recorded yet
+    $checkQuery = "SELECT id FROM user_learning_path_course 
+                  WHERE user_id = ? AND learning_path_courseid_id IN (
+                      SELECT id FROM learning_path_courseid WHERE learning_pathId = ?
+                  )";
+    $checkStmt = $mysqli->prepare($checkQuery);
+    $checkStmt->bind_param("ii", $userId, $pathId);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    
+    if ($checkResult->num_rows === 0) {
+        // Get all course IDs in this learning path
+        $courseIdsQuery = $mysqli->prepare("
+            SELECT id FROM learning_path_courseid 
+            WHERE learning_pathId = ?
+        ");
+        $courseIdsQuery->bind_param("i", $pathId);
+        $courseIdsQuery->execute();
+        $courseIdsResult = $courseIdsQuery->get_result();
+        
+        // Insert completion record for each course in the path
+        while ($courseIdRow = $courseIdsResult->fetch_assoc()) {
+            $insertQuery = "INSERT INTO user_learning_path_course 
+                           (user_id, learning_path_courseid_id) 
+                           VALUES (?, ?)";
+            $insertStmt = $mysqli->prepare($insertQuery);
+            $insertStmt->bind_param("ii", $userId, $courseIdRow['id']);
+            $insertStmt->execute();
+        }
+    }
+}
+
+$resumeUrl = "#";
+$resumeText = "Resume Learning";
+$showResumeButton = false;
+
+if (isset($_SESSION['id'])) {
+    if ($progressPercentage > 0 && $progressPercentage < 100) {
+        // Find the first incomplete lesson in the first incomplete course
+        $resumeQuery = $mysqli->prepare("
+            SELECT l.id, c.id as course_id
+            FROM lessons l
+            JOIN course_subject cs ON l.course_subject_id = cs.id
+            JOIN courses c ON cs.courseId = c.id
+            JOIN learning_path_courseid lpc ON c.id = lpc.courseId
+            LEFT JOIN lesson_completions lc ON l.id = lc.lesson_id AND lc.user_id = ?
+            WHERE lpc.learning_pathId = ? AND (lc.id IS NULL OR lc.user_id IS NULL)
+            ORDER BY lpc.sequence, cs.display_order, l.id
+            LIMIT 1
+        ");
+        $resumeQuery->bind_param("ii", $_SESSION['id'], $pathId);
+        $resumeQuery->execute();
+        $resumeResult = $resumeQuery->get_result();
+        
+        if ($resumeResult->num_rows > 0) {
+            $resumeData = $resumeResult->fetch_assoc();
+            $resumeUrl = "subject.php?id=" . $resumeData['course_id'] . "&lesson_id=" . $resumeData['id'];
+            $showResumeButton = true;
+        }
+    } elseif ($progressPercentage === 0) {
+        // If no progress, start with first course
+        if (!empty($courses)) {
+            $resumeUrl = "subject.php?id=" . $courses[0]['id'];
+            $resumeText = "Start Learning";
+            $showResumeButton = true;
+        }
+    } elseif ($progressPercentage === 100) {
+        // If all complete, show certificate or completion message
+        $resumeUrl = "generate_certificate.php?path_id=" . $pathId;
+        $resumeText = "View Certificate";
+        $showResumeButton = true;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -201,9 +282,6 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                             <button class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-share-alt mr-2"></i> Share
                             </button>
-                            <!-- <button class="px-4 py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700">
-                                Start Learning
-                            </button> -->
                         </div>
                     </div>
 
@@ -247,7 +325,7 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                     <?php foreach ($courses as $index => $course): 
                         $isCompleted = false;
                         $isCurrent = $index === 0;
-        
+
                         // Check if user is enrolled in this course
                         $isEnrolled = false;
                         if (isset($_SESSION['id'])) {
@@ -260,7 +338,27 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                             $enrollResult = $enrollQuery->get_result();
                             $isEnrolled = $enrollResult->num_rows > 0;
                         }
-        
+
+                        // Check if course is completed
+                        if ($userId && $isEnrolled) {
+                            $completedQuery = $mysqli->prepare("
+                                SELECT COUNT(*) as total_lessons,
+                                    (SELECT COUNT(*) 
+                                        FROM lesson_completions lc
+                                        JOIN lessons l ON lc.lesson_id = l.id
+                                        JOIN course_subject cs ON l.course_subject_id = cs.id
+                                        WHERE lc.user_id = ? AND cs.courseId = ?) as completed_lessons
+                                FROM lessons l
+                                JOIN course_subject cs ON l.course_subject_id = cs.id
+                                WHERE cs.courseId = ?
+                            ");
+                            $completedQuery->bind_param("iii", $userId, $course['id'], $course['id']);
+                            $completedQuery->execute();
+                            $completedResult = $completedQuery->get_result();
+                            $completionData = $completedResult->fetch_assoc();
+                            $isCompleted = ($completionData['completed_lessons'] >= $completionData['total_lessons']) && ($completionData['total_lessons'] > 0);
+                        }
+
                         // Get subjects with their lessons for this course
                         $subjectsQuery = $mysqli->prepare("
                             SELECT s.id as subject_id, s.name, cs.id as course_subject_id
@@ -276,11 +374,12 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                     ?>
                     <div class="step-card p-6 border-b border-gray-100 <?= $isCurrent ? 'current-step' : '' ?> hover:bg-gray-50 transition-all">
                         <div class="flex items-start gap-4">
+                            <!-- Completion status indicator -->
                             <?php if ($isCompleted): ?>
                                 <div class="checkmark">
                                     <i class="fas fa-check"></i>
                                 </div>
-                            <?php elseif ($isCurrent): ?>
+                            <?php elseif ($isCurrent && !$allCoursesComplete): ?>
                                 <div class="w-6 h-6 rounded-full bg-primary-100 border-2 border-primary-500 flex items-center justify-center">
                                     <div class="w-2 h-2 rounded-full bg-primary-600"></div>
                                 </div>
@@ -295,16 +394,18 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                                     <h3 class="text-lg font-bold text-gray-900"><?= $course['name'] ?></h3>
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full"><?= $course['totalHours'] ?> hours</span>
-                                        <?php if ($isEnrolled): ?>
-                                            <a href="subject.php?id=<?= $course['id'] ?>" 
-                                               class="px-3 py-1 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
-                                                Continue
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="enroll.php?id=<?= $course['id'] ?>" 
-                                               class="px-3 py-1 text-sm font-medium rounded-lg bg-secondary-600 text-white hover:bg-secondary-700 transition-colors">
-                                                Enroll Now
-                                            </a>
+                                        <?php if (!$allCoursesComplete): ?>
+                                            <?php if ($isEnrolled): ?>
+                                                <a href="subject.php?id=<?= $course['id'] ?>" 
+                                                class="px-3 py-1 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
+                                                    Continue
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="enroll.php?id=<?= $course['id'] ?>" 
+                                                class="px-3 py-1 text-sm font-medium rounded-lg bg-secondary-600 text-white hover:bg-secondary-700 transition-colors">
+                                                    Enroll Now
+                                                </a>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -392,7 +493,7 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                 <?php endif; ?>
             </div>
 
-            <!-- Sidebar remains the same -->
+            <!-- Sidebar -->
             <aside class="w-full lg:w-80 space-y-6">
                 <!-- Progress Summary -->
                 <div class="bg-white rounded-xl shadow-sm p-6">
@@ -404,9 +505,23 @@ $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLesso
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: <?= $progressPercentage ?>%"></div>
                     </div>
-                    <button class="mt-4 w-full py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
-                        Resume Learning
-                    </button>
+                    
+                    <?php if ($progressPercentage === 100): ?>
+                        <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                            <i class="fas fa-trophy text-green-600 text-2xl mb-2"></i>
+                            <h3 class="font-bold text-green-800">Congratulations!</h3>
+                            <p class="text-green-600">You've completed this learning path</p>
+                        </div>
+                        <a href="<?= $resumeUrl ?>" 
+                           class="mt-4 w-full py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-certificate mr-2"></i> <?= $resumeText ?>
+                        </a>
+                    <?php elseif ($showResumeButton): ?>
+                        <a href="<?= $resumeUrl ?>" 
+                           class="mt-4 w-full py-2 text-sm font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-play mr-2"></i> <?= $resumeText ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Quick Links -->

@@ -11,8 +11,7 @@ if (!isset($_SESSION['id'])) {
 
 $user_id = $_SESSION['id'];
 $user_role = $_SESSION['role_id'];
-// var_dump($user_id);
-// exit();
+
 // Handle new question submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_question'])) {
     $question = $mysqli->real_escape_string($_POST['question']);
@@ -518,5 +517,7 @@ $topQuestions = $mysqli->query($topQuestionsQuery);
             });
         });
     </script>
+
+    <?php require '../templates/template_footer.php'  ?>
 </body>
 </html>

@@ -1,5 +1,7 @@
 <?php 
 session_start(); 
+// var_dump($_SESSION['id']);
+// exit();
 // var_dump("<strong>Server time: </strong>" . date("Y-m-d H:i:s") . "<br>");
 // exit();
 $type = "Courses";

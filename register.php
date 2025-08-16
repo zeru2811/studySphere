@@ -9,6 +9,8 @@ require "requires/connect.php";
 $error = false;
 $error_msg = '';
 $suc_msg = '';
+$success = '';
+$user_error = "";
 
 $name_error =
     $email_error =

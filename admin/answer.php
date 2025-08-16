@@ -330,9 +330,7 @@ require "./templates/admin_sidebar.php";
                         <div class="relative">
                             <img src="../img/<?= htmlspecialchars($specificQuestion['user_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                  class="w-14 h-14 rounded-full object-cover border-2 border-white shadow">
-                            <?php if ($specificQuestion['user_role'] <= 2): ?>
-                                <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-white">T</span>
-                            <?php endif; ?>
+                            
                         </div>
                         <div>
                             <div class="flex items-center space-x-3">

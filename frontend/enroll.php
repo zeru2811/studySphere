@@ -1,7 +1,8 @@
 <?php
 session_start();
 $type = "Enroll";
-
+// var_dump($_SESSION['id']);
+// exit();
 require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
@@ -349,7 +350,7 @@ if ($checkEnroll->num_rows > 0) {
 <div class="container mx-auto px-4 ">
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Main Course Content -->
-        <div class="lg:w-2/3">
+        <div class="lg:w-2/3 pt-4">
             <!-- Breadcrumb -->
             <div class="flex items-center text-sm text-gray-500 mb-6">
                 <a href="index.php" class="hover:text-indigo-600">Home</a>
@@ -371,7 +372,7 @@ if ($checkEnroll->num_rows > 0) {
                 <?php unset($_SESSION['success']); ?>
             <?php endif; ?>
             <!-- Course Header -->
-            <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 pt-2 mb-8">
                 <div class="flex items-center mb-4">
                     <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded">POPULAR</span>
                     <span class="ml-2 text-sm text-gray-500">Updated: <?= date("F Y", strtotime($data['updated_at'])) ?></span>
