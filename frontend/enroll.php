@@ -925,5 +925,5 @@ if ($roleId == 3) {
 
 </script>
 
-
+<?php require '../templates/template_backtotop.php'  ?>
 <?php require '../templates/template_footer.php'; ?>

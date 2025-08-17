@@ -7,7 +7,11 @@ $type = "Subject";
 require '../requires/connect.php';
 require '../requires/common_function.php';
 $basePath = '/studysphere/frontend';
+if (!isset($_SESSION['id'])) {
 
+  header("Location: ../login.php");
+  exit();
+}
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   header("Location: courses.php");
   exit();
@@ -279,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
                   <!-- Main Note -->
                   <div class="flex items-start">
-                    <img src="<?= htmlspecialchars($note['thumbnail'] ?? 'img/default-profile.png') ?>"
+                    <img src="<?= htmlspecialchars(!empty($note['thumbnail']) ? '../uploads/profiles/' . $note['thumbnail'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                       alt="Profile"
                       class="w-10 h-10 rounded-full mr-3">
                     <div class="flex-1">
@@ -306,7 +310,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       <?php foreach ($replies as $reply): ?>
                         <div class="bg-white rounded-lg p-3 border border-gray-200">
                           <div class="flex items-start">
-                            <img src="<?= htmlspecialchars($reply['thumbnail'] ?? 'img/default-profile.png') ?>"
+                            <img src="<?= htmlspecialchars(!empty($reply['thumbnail']) ? '../uploads/profiles/' . $reply['thumbnail'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>"
+                  
                               alt="Profile"
                               class="w-8 h-8 rounded-full mr-2">
                             <div class="flex-1">
@@ -591,6 +596,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     });
   </script>
+      <?php require '../templates/template_backtotop.php'  ?>
+      <?php require '../templates/template_footer.php'  ?>
 </body>
 
 </html>

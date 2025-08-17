@@ -16,7 +16,7 @@ if ($_SESSION['role_id'] > 2) { // Only allow teachers/admins (role_id 1 or 2)
 require "../requires/common.php";
 require "../requires/connect.php";
 require "../requires/common_function.php";
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "Comments Dashboard";
 
 // Handle Reply Submission
@@ -249,7 +249,7 @@ require "./templates/admin_sidebar.php";
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex items-start space-x-4">
                         <div class="relative">
-                            <img src="<?= htmlspecialchars($specificComment['user_photo'] ?? 'img/default-profile.png', ENT_QUOTES, 'UTF-8') ?>" 
+                            <img src="../uploads/profiles/<?= htmlspecialchars($specificComment['user_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                  class="w-14 h-14 rounded-full object-cover border-2 border-white shadow">
                             <?php if ($specificComment['user_role'] <= 2): ?>
                                 <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-white">T</span>
@@ -301,8 +301,7 @@ require "./templates/admin_sidebar.php";
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-start space-x-3">
                                             <div class="relative">
-                                                <img src="<?= htmlspecialchars($reply['profile_photo'] ?? 'img/default-profile.png', ENT_QUOTES, 'UTF-8') ?>" 
-                                                     class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
+                                                <img src="<?= htmlspecialchars(!empty($reply['profile_photo']) ? '../uploads/profiles/' . $reply['profile_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
                                                 <?php if ($reply['role_id'] <= 2): ?>
                                                     <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-white">T</span>
                                                 <?php endif; ?>
@@ -337,7 +336,7 @@ require "./templates/admin_sidebar.php";
                     <form method="POST">
                         <input type="hidden" name="comment_id" value="<?= $specificComment['id'] ?>">
                         <div class="flex items-start space-x-4">
-                            <img src="<?= htmlspecialchars($_SESSION['profile_photo'] ?? 'img/default-profile.png', ENT_QUOTES, 'UTF-8') ?>" 
+                            <img src="<?= htmlspecialchars($_SESSION['profile_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                  class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
                             <div class="flex-1">
                                 <label for="reply" class="block text-sm font-medium text-gray-700 mb-1">Your Reply</label>
@@ -426,8 +425,9 @@ require "./templates/admin_sidebar.php";
                                     
                                    
                                     <div class="relative">
-                                        <img src="<?= htmlspecialchars($user['user_photo'] ?? 'img/default-profile.png', ENT_QUOTES, 'UTF-8') ?>" 
-                                             class="w-12 h-12 rounded-full mr-8 object-cover border-2 border-white shadow">
+                                    
+                                        <img src="<?= htmlspecialchars(!empty($user['user_photo']) ? '../uploads/profiles/' . $user['user_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
+
                                         <?php if ($user['user_role'] <= 2): ?>
                                             <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-white">T</span>
                                         <?php endif; ?>

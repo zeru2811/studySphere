@@ -1,10 +1,14 @@
 <?php
 session_start();
 $type = "Learning Paths";
-require '../templates/template_nav.php';
 require '../requires/connect.php';
+require '../templates/template_nav.php';
 $basePath = '/studysphere/frontend';
 
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 // Get filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? $_GET['category'] : '';
@@ -250,5 +254,5 @@ $paths = $result->fetch_all(MYSQLI_ASSOC);
     </script>
 </body>
 </html>
-
+<?php require '../templates/template_backtotop.php'  ?>
 <?php require '../templates/template_footer.php'; ?>

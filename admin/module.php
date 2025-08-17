@@ -16,7 +16,7 @@ if ($_SESSION['role_id'] > 2) { // Only allow teachers/admins (role_id 1 or 2)
 require "../requires/common.php";
 require "../requires/connect.php";
 require "../requires/common_function.php";
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "Modules Management";
 
 // Handle Module Creation

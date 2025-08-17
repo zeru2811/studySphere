@@ -1,9 +1,12 @@
 <?php 
 session_start(); 
 $type = "Blog";
-require '../templates/template_nav.php';
 require '../requires/connect.php';
-
+require '../templates/template_nav.php';
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 $slug = $_GET['slug'] ?? '';
 $stmt = $mysqli->prepare("SELECT * FROM blog WHERE slug = ?");
 $stmt->bind_param("s", $slug);
@@ -27,5 +30,5 @@ if (!$blog) {
   <p class="text-gray-800 leading-relaxed"><?= nl2br(htmlspecialchars($blog['description'])) ?></p>
 </main>
 
-
+    <?php require '../templates/template_backtotop.php'  ?>
 <?php require '../templates/template_footer.php'  ?>

@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (in_array($_FILES['thumbnail']['type'], $allowedTypes)) {
             $uploadDir = __DIR__ . '/../uploads/thumbnails/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 755, true);
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
 
             $filename = uniqid() . '_' . basename($_FILES['thumbnail']['name']);
             $targetPath = $uploadDir . $filename;

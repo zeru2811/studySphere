@@ -10,8 +10,8 @@ session_start();
 //     exit;
 // }
 $type = "Home";
-require '../templates/template_nav.php';
 require '../requires/connect.php';
+require '../templates/template_nav.php';
 
 $roleId = isset($_SESSION['role_id']) ? intval($_SESSION['role_id']) : 0;
 
@@ -137,7 +137,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
 
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             <?php while ($row = $queResult->fetch_assoc()): ?>
-                <article class="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group h-full flex flex-col">
+                <article class="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group h-full flex flex-col">
                     <div class="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                     <div class="p-6 relative z-10 flex-grow flex flex-col">
@@ -194,7 +194,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
         </div>
 
         <div class="mt-16 text-center">
-            <a href="discussion.php" class="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-all transform hover:-translate-y-1 focus:ring-4 focus:ring-gray-300 focus:ring-offset-2 shadow-lg">
+            <a href="discussion.php" class="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-white bg-indigo-700 hover:bg-indigo-600 rounded-lg transition-all transform hover:-translate-y-1 focus:ring-4 focus:ring-indigo-300 focus:ring-offset-2 shadow-lg">
                 Explore All Topics
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -244,12 +244,11 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
             <div id="testimonialWrapper" class="flex transition-transform duration-700 ease-in-out">
                 <?php foreach ($testimonials as $testimonial): ?>
                     <div class="min-w-full px-4">
-                        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md text-left max-w-3xl mx-auto">
+                        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg text-left max-w-3xl mx-auto">
                             <p class="text-lg font-semibold"><?= htmlspecialchars($testimonial['name']) ?></p>
                             <p class="text-gray-600 mt-3 text-sm sm:text-base truncate-text" data-full-text="<?= htmlspecialchars($testimonial['text']) ?>">
                                 <?= htmlspecialchars($testimonial['text']) ?>
                             </p>
-                            <a href="testimonials.html" class="text-purple-500 text-sm mt-2 inline-block hover:underline">Read More</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -323,7 +322,7 @@ if ($Feedresult && $Feedresult->num_rows > 0) {
         </div>
     </section>
 <?php endif; ?>
-
+<?php require '../templates/template_backtotop.php'  ?>
 
 
 

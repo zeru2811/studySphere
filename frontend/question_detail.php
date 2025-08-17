@@ -172,7 +172,7 @@ $answers = $mysqli->query("
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-3">
                             <div class="relative">
-                                <img src="../img/<?= htmlspecialchars($question['asker_photo']) ?>" 
+                                <img src="<?= htmlspecialchars(!empty($question['asker_photo']) ? '../uploads/profiles/' . $question['asker_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                      class="w-8 h-8 rounded-full object-cover">
                             </div>
                             <div>
@@ -215,7 +215,7 @@ $answers = $mysqli->query("
                             <div class="flex items-start gap-2">
                                 <!-- Answerer Info -->
                                 <div class="flex flex-col items-center" style="width: 40px; height: 40px;" >
-                                    <img src="../img/<?= htmlspecialchars($answer['responder_photo']) ?>" 
+                                    <img src="<?= htmlspecialchars(!empty($answer['responder_photo']) ? '../uploads/profiles/' . $answer['responder_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>"  
                                              class=" rounded-full object-cover" style="width: 100%; height: 100%;" >
                                 </div>
                                 
@@ -293,5 +293,8 @@ $answers = $mysqli->query("
         });
     }
     </script>
+        <?php require '../templates/template_backtotop.php'  ?>
+        <?php require '../templates/template_footer.php'; ?>
+
 </body>
 </html>

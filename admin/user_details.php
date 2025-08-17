@@ -122,7 +122,7 @@ require './templates/admin_sidebar.php';
                     <div class="lg:col-span-1">
                         <div class="profile-3d bg-white rounded-xl p-6 text-center">
                             <?php if (!empty($user['profile_photo'])): ?>
-                                <img src="<?= htmlspecialchars($user['profile_photo']) ?>" alt="Profile Photo" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white shadow-md">
+                                <img src="../uploads/profiles/<?= htmlspecialchars($user['profile_photo']) ?>" alt="Profile Photo" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-white shadow-md object-cover">
                             <?php else: ?>
                                 <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4 shadow-md">
                                     <span class="text-4xl font-bold"><?= htmlspecialchars(substr($user['name'], 0, 2)) ?></span>

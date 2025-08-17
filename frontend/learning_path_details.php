@@ -4,6 +4,10 @@ $type = "Learning Path Details";
 require '../requires/connect.php';
 $basePath = '/studysphere/frontend';
 
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 // Get path ID from URL
 $pathId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $userId = $_SESSION['id'] ?? 0;
@@ -468,7 +472,7 @@ if (isset($_SESSION['id'])) {
                     <h2 class="text-xl font-bold text-gray-900 mb-4">About the Instructors</h2>
                     <?php foreach ($teachers as $teacher): ?>
                     <div class="flex flex-col sm:flex-row gap-6 mb-6">
-                        <img src="<?= htmlspecialchars($teacher['profile_picture'] ?? 'https://randomuser.me/api/portraits/men/32.jpg') ?>" 
+                        <img  src="<?= htmlspecialchars(!empty($teacher['profile_picture']) ? '../uploads/profiles/' . $teacher['profile_picture'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                              alt="<?= htmlspecialchars($teacher['name']) ?>" 
                              class="w-20 h-20 rounded-full">
                         <div>
@@ -562,6 +566,7 @@ if (isset($_SESSION['id'])) {
             </aside>
         </div>
     </div>
+    <?php require '../templates/template_backtotop.php'  ?>
     <?php require '../templates/template_footer.php'; ?>
 
     <script>

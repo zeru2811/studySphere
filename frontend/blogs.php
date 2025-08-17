@@ -1,8 +1,13 @@
 <?php 
 session_start(); 
 $type = "Blogs";
-require '../templates/template_nav.php';
 require '../requires/connect.php';
+require '../templates/template_nav.php';
+
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 
 function slugify($text) {
     $text = preg_replace('~[^\pL\d]+~u', '-', $text);
@@ -43,7 +48,7 @@ $result = $mysqli->query($sql);
   </div>
 </main>
 
-
+<?php require '../templates/template_backtotop.php'  ?>
 <?php require '../templates/template_footer.php'  ?>
 
 

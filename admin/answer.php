@@ -11,7 +11,7 @@ if (!isset($_SESSION['id'])) {
 require "../requires/common.php";
 require "../requires/connect.php";
 require "../requires/common_function.php";
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "Q&A Dashboard";
 
 // Handle Answer Submission
@@ -328,9 +328,9 @@ require "./templates/admin_sidebar.php";
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex items-start space-x-4">
                         <div class="relative">
-                            <img src="../img/<?= htmlspecialchars($specificQuestion['user_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
+                            <img src="<?= htmlspecialchars(!empty($specificQuestion['user_photo']) ? '../uploads/profiles/' . $specificQuestion['user_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                  class="w-14 h-14 rounded-full object-cover border-2 border-white shadow">
-                            
+             
                         </div>
                         <div>
                             <div class="flex items-center space-x-3">
@@ -380,7 +380,7 @@ require "./templates/admin_sidebar.php";
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-start space-x-3">
                                             <div class="relative">
-                                                <img src="../img/<?= htmlspecialchars($answer['profile_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
+                                                <img src="<?= htmlspecialchars(!empty($answer['profile_photo']) ? '../uploads/profiles/' . $answer['profile_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
                                                      class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
                                                 <?php if ($answer['role_id'] <= 2): ?>
                                                     <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-white">T</span>
@@ -422,10 +422,10 @@ require "./templates/admin_sidebar.php";
                                 $userQuery->bind_param("i", $userId);
                                 $userQuery->execute();
                                 $userResult = $userQuery->get_result();
-                                $userPhoto = $userResult->fetch_assoc()['profile_photo'] ?? '../img/image.png';
+                                $userPhoto = $userResult->fetch_assoc()['profile_photo'];
                                 $userQuery->close();
                             ?>
-                            <img src="../img/<?= htmlspecialchars($userPhoto ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
+                            <img src="<?= htmlspecialchars(!empty($userPhoto) ? '../uploads/profiles/' . $userPhoto : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>"
                                  class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
                             <div class="flex-1">
                                 <label for="answer" class="block text-sm font-medium text-gray-700 mb-1">Your Answer</label>
@@ -509,7 +509,7 @@ require "./templates/admin_sidebar.php";
                                         </span>
                                     <?php endif; ?>
                                     <div class="relative">
-                                        <img src="../img/<?= htmlspecialchars($user['user_photo'] ?? '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
+                                        <img src="<?= htmlspecialchars(!empty($user['user_photo']) ? '../uploads/profiles/' . $user['user_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>"
                                              class="w-12 h-12 rounded-full mr-8 object-cover border-2 border-white shadow">
                                         <?php if ($user['user_role'] <= 2): ?>
                                             <span class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full border-2 border-white">T</span>

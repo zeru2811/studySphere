@@ -5,9 +5,14 @@ session_start();
 // var_dump("<strong>Server time: </strong>" . date("Y-m-d H:i:s") . "<br>");
 // exit();
 $type = "Courses";
-require '../templates/template_nav.php';
 require '../requires/connect.php';
+require '../templates/template_nav.php';
 $basePath = '/studysphere/frontend';
+
+if (!isset($_SESSION['id'])) {
+    header("Location: ../login.php");
+    exit();
+}   
 // Get categories
 $catRes = $mysqli->query("SELECT * FROM category");
 $categories = $catRes->fetch_all(MYSQLI_ASSOC);
@@ -155,5 +160,5 @@ if ($result && $result->num_rows > 0) {
     </div>
 </body>
 </html>
-
+<?php require '../templates/template_backtotop.php'  ?>
 <?php require '../templates/template_footer.php'; ?>

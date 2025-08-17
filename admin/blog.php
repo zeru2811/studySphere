@@ -11,7 +11,7 @@ if (!isset($_SESSION['id'])) {
 require "../requires/common.php";
 require "../requires/connect.php";
 require "../requires/common_function.php";
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 $pagetitle = "Blog Management";
 
 // Handle Blog Creation

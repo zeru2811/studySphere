@@ -291,7 +291,9 @@ $topQuestions = $mysqli->query($topQuestionsQuery);
                                     <div class="flex flex-wrap items-center justify-between gap-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                                <img src="../img/<?= htmlspecialchars($question['asker_photo']) ?>" alt="<?= htmlspecialchars($question['asker']) ?>" class="rounded-full object-cover w-full h-full">
+                                                <img src="<?= htmlspecialchars(!empty($question['asker_photo']) ? '../uploads/profiles/' . $question['asker_photo'] : '../img/image.png', ENT_QUOTES, 'UTF-8') ?>" 
+                                                 alt="<?= htmlspecialchars($question['asker']) ?>" 
+                                                        class="rounded-full object-cover w-full h-full">
                                             </div>
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($question['asker']) ?></p>
@@ -517,7 +519,7 @@ $topQuestions = $mysqli->query($topQuestionsQuery);
             });
         });
     </script>
-
+<?php require '../templates/template_backtotop.php'  ?>
     <?php require '../templates/template_footer.php'  ?>
 </body>
 </html>

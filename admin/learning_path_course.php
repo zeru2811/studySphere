@@ -136,7 +136,7 @@ require './templates/admin_sidebar.php';
 
 <body class="bg-gray-50 w-full min-h-screen p-4 md:p-6">
 
-<div class="max-w-6xl back w-full pt-10 mx-auto">
+<div class="max-w-full back w-full pt-10 mx-5">
     <!-- Notification Messages -->
     <?php if (isset($_SESSION['message'])): ?>
         <div class="fixed top-4 right-4 z-50">

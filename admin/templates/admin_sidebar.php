@@ -1,4 +1,4 @@
-
+<!-- admin_sidebar.php -->
 <body class="bg-gray-50">
 <!-- Mobile Menu Button -->
 <button class="mobile-menu-button fixed top-4 right-4 z-50 p-2 w-10 h-10 rounded-md bg-primary text-white lg:hidden">
@@ -7,7 +7,7 @@
 
 <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <div class="sidebar bg-white  shadow-lg py-6 flex flex-col lg:relative">
+    <div class="sidebar bg-white shadow-lg py-6 flex flex-col lg:relative overflow-y-auto">
         <div class="px-6 mb-8">
             <h1 class="text-2xl font-bold text-primary flex items-center">
                 <i class="fas fa-graduation-cap mr-2"></i>
@@ -77,7 +77,7 @@
             <div class="px-4 mt-8 mb-4">
                 <h3 class="text-xs uppercase text-gray-500 font-semibold tracking-wider">Account</h3>
             </div>
-            <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
+            <a href="admin_profile.php" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
                 <i class="fas fa-user mr-3"></i> My Profile
             </a>
             <a href="#" onclick="openModal('logoutModal')" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">
@@ -109,6 +109,13 @@
         </div>
     </div>
     <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const sidebar = document.querySelector('.sidebar');
+
+        mobileMenuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
         }
@@ -116,4 +123,13 @@
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
+        // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth < 1024 &&
+            !sidebar.contains(e.target) &&
+            e.target !== mobileMenuButton &&
+            !mobileMenuButton.contains(e.target)) {
+            sidebar.classList.remove('active');
+        }
+    });
     </script>

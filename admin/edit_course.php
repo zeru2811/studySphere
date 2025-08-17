@@ -326,7 +326,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="../assets/js/jquery-3.7.1.min.js"></script>
     
 
-    <?php include 'includes/footer.php'; ?>
 </body>
 </html>
 

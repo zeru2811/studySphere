@@ -21,7 +21,7 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
     $user_name = $mysqli->real_escape_string($_POST['username']);
     $password = $mysqli->real_escape_string($_POST['password']);
     $remember = (isset($_POST['remember'])) ? $_POST['remember'] : 0;
-    $face_data = isset($_POST['face_data']) ? $mysqli->real_escape_string($_POST['face_data']) : '';
+    // $face_data = isset($_POST['face_data']) ? $mysqli->real_escape_string($_POST['face_data']) : '';
     
     if (strlen($user_name) === 0) {
         $error = true;
@@ -31,10 +31,10 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
         $error = true;
         $pass_error = "Password is required.";
     }
-    if (empty($face_data)) {
-        $error = true;
-        $face_error = "Face recognition is required.";
-    }
+    // if (empty($face_data)) {
+    //     $error = true;
+    //     $face_error = "Face recognition is required.";
+    // }
     
     if(!$error){
         $sql = "SELECT * FROM `users` WHERE (name = '$user_name' OR email = '$user_name')";
@@ -49,38 +49,39 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
                 $db_password = $row['password'];
                 $db_status = $row['status'];
                 $db_role = $row['role_id'];
-                $db_face_data = $row['face_data'];
+                // $db_face_data = $row['face_data'];
 
                 // Verify password first
                 if(password_verify($password, $db_password)){
                     // Then verify face data if available
-                    if (!empty($db_face_data)) {
-                        $stored_descriptor = json_decode($db_face_data, true);
-                        $input_descriptor = json_decode($face_data, true);
+                    // if (!empty($db_face_data)) {
+                    //     $stored_descriptor = json_decode($db_face_data, true);
+                    //     $input_descriptor = json_decode($face_data, true);
                         
-                        if ($stored_descriptor && $input_descriptor) {
-                            // Calculate Euclidean distance between descriptors
-                            $distance = 0;
-                            for ($i = 0; $i < count($stored_descriptor); $i++) {
-                                $distance += pow($stored_descriptor[$i] - $input_descriptor[$i], 2);
-                            }
-                            $distance = sqrt($distance);
+                    //     if ($stored_descriptor && $input_descriptor) {
+                    //         // Calculate Euclidean distance between descriptors
+                    //         $distance = 0;
+                    //         for ($i = 0; $i < count($stored_descriptor); $i++) {
+                    //             $distance += pow($stored_descriptor[$i] - $input_descriptor[$i], 2);
+                    //         }
+                    //         $distance = sqrt($distance);
                             
-                            // Threshold for face matching (adjust as needed)
-                            if ($distance > 0.5) {
-                                $error = true;
-                                $face_error = "Face recognition failed. Please try again.";
-                                $user_error = "Face recognition failed. Please try again.";
-                                continue;
-                            }
-                        }
-                    }
+                    //         // Threshold for face matching (adjust as needed)
+                    //         if ($distance > 0.5) {
+                    //             $error = true;
+                    //             $face_error = "Face recognition failed. Please try again.";
+                    //             $user_error = "Face recognition failed. Please try again.";
+                    //             continue;
+                    //         }
+                    //     }
+                    // }
 
                     // If we get here, both password and face are valid
                     $_SESSION['id'] = $user_id;
                     $_SESSION['username'] = $db_name;
                     $_SESSION['email'] = $db_email;
                     $_SESSION['role_id'] = $db_role;
+                    $_SESSION['profile_photo'] = $row['profile_photo'];
 
                     if ($remember == 1) {
                         setcookie("username", $row['name'], time() + (86400 * 30), "/");
@@ -681,10 +682,10 @@ if (isset($_POST['form_sub']) && $_POST['form_sub'] == "1") {
                     $('.pass_error').text('Password is required.');
                 }
                 
-                if(!faceDataInput.value){
-                    error = true;
-                    showFaceStatus('Please capture your face before logging in', 'face-error');
-                }
+                // if(!faceDataInput.value){
+                //     error = true;
+                //     showFaceStatus('Please capture your face before logging in', 'face-error');
+                // }
                 
                 if(!error){
                     $('#loginForm').submit();
