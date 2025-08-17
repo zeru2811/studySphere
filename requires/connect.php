@@ -1,10 +1,10 @@
 <?php 
 date_default_timezone_set('Asia/Yangon');
 $server_name = "localhost";
-$user_name = "root";
-$password = "";
-// $user_name = "zuzadpsz_sphere_user";
-// $password = "WI0kst3p=OEto~w]";
+// $user_name = "root";
+// $password = "";
+$user_name = "zuzadpsz_sphere_user";
+$password = "WI0kst3p=OEto~w]";
 
 $mysqli = new mysqli($server_name, $user_name, $password);
 
@@ -16,7 +16,7 @@ if($mysqli->connect_errno){
 create_database($mysqli);
 function create_database($mysqli){
     // zuzadpsz_sphere
-    $sql = "CREATE DATABASE IF NOT EXISTS `sphere` 
+    $sql = "CREATE DATABASE IF NOT EXISTS `zuzadpsz_sphere` 
         DEFAULT CHARACTER SET utf8mb4 
         COLLATE utf8mb4_general_ci";
     if ($mysqli->query($sql)) {
@@ -27,7 +27,7 @@ function create_database($mysqli){
 
 function select_db($mysqli)
 {
-    if ($mysqli->select_db("sphere")) {
+    if ($mysqli->select_db("zuzadpsz_sphere")) {
         return true;
     }
     return false;
