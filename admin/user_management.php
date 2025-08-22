@@ -171,17 +171,47 @@ if (isset($_GET['action'])) {
     $userId = intval($_GET['id']);
 
     if ($action === 'delete' && $userId > 0) {
+        // Remove teacher reference
         $stmt1 = $mysqli->prepare("UPDATE courses SET teacherId = NULL WHERE teacherId = ?");
         $stmt1->bind_param("i", $userId);
         $stmt1->execute();
 
+        // Delete tokens
         $stmt1 = $mysqli->prepare("DELETE FROM password_token WHERE userId = ?");
         $stmt1->bind_param("i", $userId);
         $stmt1->execute();
 
+
+        // Delete certificate logs linked to this user
+        $stmt1 = $mysqli->prepare("DELETE FROM certificate_logs WHERE user_id = ?");
+        $stmt1->bind_param("i", $userId);
+        $stmt1->execute();
+
+        // Delete likes on user's questions
+        $stmt1 = $mysqli->prepare("DELETE FROM question_likes WHERE questionId IN (SELECT id FROM question WHERE userId = ?)");
+        $stmt1->bind_param("i", $userId);
+        $stmt1->execute();
+
+        // Delete answers linked to user's questions
+        $stmt1 = $mysqli->prepare("DELETE FROM answer WHERE questionId IN (SELECT id FROM question WHERE userId = ?)");
+        $stmt1->bind_param("i", $userId);
+        $stmt1->execute();
+
+        // Delete user's questions
+        $stmt1 = $mysqli->prepare("DELETE FROM question WHERE userId = ?");
+        $stmt1->bind_param("i", $userId);
+        $stmt1->execute();
+        
+
+        // var_dump($userId);
+        // exit();
+
+        // Finally, delete the user
         $stmt2 = $mysqli->prepare("DELETE FROM users WHERE id = ?");
         $stmt2->bind_param("i", $userId);
         $stmt2->execute();
+
+        
 
         $_SESSION['message'] = "User deleted successfully.";
         header("Location: " . strtok($_SERVER["REQUEST_URI"], '?'));

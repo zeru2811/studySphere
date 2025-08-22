@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!mkdir($uploadDir, 0777, true)) {
                 $_SESSION['error'] = "Failed to create upload directory.";
             } else {
-                chmod($uploadDir, 0777);
+                chmod($uploadDir, 0777, true);
             }
         }
 

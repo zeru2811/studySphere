@@ -189,7 +189,7 @@ require './templates/admin_sidebar.php';
 
 <body class="bg-gray-50 w-full min-h-screen p-4 md:p-6">
 
-<div class="max-w-full w-full pt-10 mx-5">
+<div class="max-w-8xl w-full pt-10 px-5 mx-auto">
     <?php if (isset($_SESSION['message'])): ?>
         <div class="fixed top-4 right-4 z-50">
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out animate-slide-in" role="alert">
