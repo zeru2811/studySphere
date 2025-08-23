@@ -110,8 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 isCertificate = ?, 
                 totalHours = ?, 
                 description = ?, 
-                thumbnail = ?, 
-                function = ?, 
+                thumbnail = ?,  
+                `function` = ?, 
                 realProjectCount = ?
             WHERE id = ?
         ");
