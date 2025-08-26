@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($price <= 0) {
         $_SESSION['error'] = "Price must be greater than 0";
     } else {
-        $stmt = $mysqli->prepare("INSERT INTO courses (name, price, title, categoryId, teacherId, isCertificate, totalHours, description, thumbnail, function, realProjectCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $mysqli->prepare("INSERT INTO courses (name, price, title, categoryId, teacherId, isCertificate, totalHours, description, thumbnail, `function`, realProjectCount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sdsiiiisssi", $name, $price, $title, $categoryId, $teacherId, $isCertificate, $totalHours, $description, $thumbnailPath, $function, $realProjectCount);
 
         if ($stmt->execute()) {
